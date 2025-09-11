@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Viewer Options</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .option {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        
+        .option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .option-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .option:nth-child(2) .option-header {
+            background-color: #2196F3;
+        }
+        
+        .option:nth-child(3) .option-header {
+            background-color: #FF9800;
+        }
+        
+        .option-content {
+            padding: 20px;
+        }
+        
+        .features {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+        
+        .features li {
+            margin-bottom: 8px;
+        }
+        
+        .complexity {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .option:nth-child(2) .btn {
+            background-color: #2196F3;
+        }
+        
+        .option:nth-child(3) .btn {
+            background-color: #FF9800;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>3D Model Viewer Options</h1>
+        <p>Choose the best option for your needs</p>
+    </header>
+    
+    <div class="container">
+        <div class="options">
+            <div class="option">
+                <div class="option-header">Option 1: Google Model Viewer</div>
+                <div class="option-content">
+                    <p><strong>Best for:</strong> Simple implementation, clean UI, mobile-friendly</p>
+                    <p>Google's Model Viewer is a web component that makes displaying 3D models easy with minimal code.</p>
+                    
+                    <div class="complexity">Complexity: Low</div>
+                    
+                    <h3>Features:</h3>
+                    <ul class="features">
+                        <li>AR support on compatible devices</li>
+                        <li>Excellent lighting out of the box</li>
+                        <li>Camera controls, auto-rotation</li>
+                        <li>Minimal code required</li>
+                        <li>Great for client presentations</li>
+                    </ul>
+                    
+                    <a href="option1-model-viewer.html" class="btn">View Demo</a>
+                </div>
+            </div>
+            
+            <div class="option">
+                <div class="option-header">Option 2: Three.js</div>
+                <div class="option-content">
+                    <p><strong>Best for:</strong> Customization, full control over scene</p>
+                    <p>Three.js is a powerful 3D library that gives you complete control over your 3D scene.</p>
+                    
+                    <div class="complexity">Complexity: Medium</div>
+                    
+                    <h3>Features:</h3>
+                    <ul class="features">
+                        <li>Full control over lighting and environment</li>
+                        <li>Support for multiple model formats</li>
+                        <li>Advanced camera controls</li>
+                        <li>Wireframe mode</li>
+                        <li>Model selection functionality</li>
+                    </ul>
+                    
+                    <a href="option2-threejs.html" class="btn">View Demo</a>
+                </div>
+            </div>
+            
+            <div class="option">
+                <div class="option-header">Option 3: Babylon.js</div>
+                <div class="option-content">
+                    <p><strong>Best for:</strong> Advanced features, game development</p>
+                    <p>Babylon.js is a full-featured game engine with excellent 3D model support.</p>
+                    
+                    <div class="complexity">Complexity: High</div>
+                    
+                    <h3>Features:</h3>
+                    <ul class="features">
+                        <li>Advanced physics and animation capabilities</li>
+                        <li>High-quality PBR rendering</li>
+                        <li>Environment maps and skybox</li>
+                        <li>Complete scene management</li>
+                        <li>Game-ready capabilities</li>
+                    </ul>
+                    
+                    <a href="3d-building-viewer.html" class="btn">View Demo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>3D Model Viewer Demo - Software Engineering Project</p>
+    </footer>
+</body>
+</html>
