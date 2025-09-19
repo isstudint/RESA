@@ -197,14 +197,30 @@
                 src="resa.glb"
                 alt="3D Building Model"
                 camera-controls
-                auto-rotate
+\
                 ar
-                shadow-intensity="1"
-                environment-image="neutral"
+                ar-modes="webxr scene-viewer quick-look"
+                tone-mapping="neutral"
+                poster="poster.webp"
+                shadow-intensity="2"
+                environment-image="go.hdr"
+                environment-rotation="40deg 0deg 0deg"
                 exposure="1"
-                shadow-softness="1"
+                shadow-softness="0.79"
                 camera-orbit="0deg 75deg 2m"
-                field-of-view="30deg">
+                field-of-view="30deg"
+                min-camera-orbit="auto auto 15m"
+                max-camera-orbit="auto auto 30m"
+                interpolation-decay="30">
+                
+                <!-- slots used by model-viewer web UI -->
+                <div class="progress-bar hide" slot="progress-bar">
+                    <div class="update-bar"></div>
+                </div>
+                <button slot="ar-button" id="ar-button">View in your space</button>
+                <div id="ar-prompt">
+                    <img src="https://modelviewer.dev/shared-assets/icons/hand.png" alt="ar prompt">
+                </div>
             </model-viewer>
             
             <div id="loading-indicator" class="loading-indicator">
@@ -229,13 +245,6 @@
                     <button id="view-front" class="view-btn active" data-orbit="0deg 75deg 2m">Front View</button>
                     <button id="view-back" class="view-btn" data-orbit="180deg 75deg 2m">Back View</button>
                     <button id="view-top" class="view-btn" data-orbit="0deg 0deg 2m">Top View</button>
-                </div>
-            </div>
-
-            <div class="control-panel">
-                <h3>Controls</h3>
-                <div class="button-group">
-                    <button id="toggle-rotate">Stop Rotation</button>
                 </div>
             </div>
         </div>
@@ -307,16 +316,9 @@
                 });
             });
             
-            // Toggle auto-rotation
-            let isRotating = true;
-            toggleRotateBtn.addEventListener('click', () => {
-                isRotating = !isRotating;
-                modelViewer.autoRotate = isRotating;
-                toggleRotateBtn.textContent = isRotating ? 'Stop Rotation' : 'Start Rotation';
-            });
-            
+
             // AR button functionality
-            toggleArBtn.addEventListener('click', () => {
+            toggleArBtn && toggleArBtn.addEventListener('click', () => {
                 modelViewer.activateAR();
             });
             
