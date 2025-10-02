@@ -1,2 +1,0 @@
-# RESA
-STRUCTIV
