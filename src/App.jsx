@@ -1,30 +1,19 @@
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import Login from './components/Login.jsx';
+import Navbar from './components/Nav.jsx';
+import Button from './components/button.jsx';
 import './css/style.css';
-function App() {
+
+function HomePage() {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   return (
-    <main className="App">
-      <nav className="navbar">
-        <div className="nav-container">
-          <div className="logo-nav">
-            <h1 className="logo">STRUCTIV</h1>
-          </div>
-
-          <div className="nav-menu">
-            <a href="#home" className="nav-link">
-              Home
-            </a>
-            <a href="#faq" className="nav-link">
-              FAQ
-            </a>
-            <a href="#booking" className="nav-link">
-              Booking
-            </a>
-            <a href="#showcase" className="nav-link">
-              Showcase
-            </a>
-          </div>
-        </div>
-      </nav>
-
+    <>
+      <Navbar />
       {/* 1ST SECTION */}
       <section className="hero-section">
         <div className="hero-content">
@@ -36,7 +25,7 @@ function App() {
               that allows you to explore and acquire a unit of your very own
               home.
             </p>
-            <button className="cta-button">Book now</button>
+            <Button onClick={handleLoginClick} text="Get Started" />
           </div>
         </div>
 
@@ -73,6 +62,19 @@ function App() {
           reveal="auto"
         ></model-viewer>
       </section>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <main className="App">
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/Nav" element={<Navbar />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/button" element={<Button />} />
+      </Routes>
     </main>
   );
 
