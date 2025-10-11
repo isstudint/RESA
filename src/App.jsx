@@ -56,7 +56,11 @@ function HomePage() {
           alt="RESA 3D Model"
           ar
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           disable-tap
+=======
+
+>>>>>>> Stashed changes
 =======
 
 >>>>>>> Stashed changes
