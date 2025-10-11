@@ -55,12 +55,18 @@ function HomePage() {
           src="/public/resa.glb"
           alt="RESA 3D Model"
           ar
+<<<<<<< Updated upstream
           disable-tap
+=======
+
+>>>>>>> Stashed changes
           environment-image="/public/brown_photostudio_02_2k.hdr"
           camera-controls
           shadow-intensity="2"
           loading="eager"
           reveal="auto"
+          max-camera-orbit="auto auto 30m"
+          interpolation-decay="30"
         ></model-viewer>
       </section>
     </>
@@ -73,7 +79,6 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/Nav" element={<Navbar />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/button" element={<Button />} />
       </Routes>
     </main>

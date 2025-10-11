@@ -13,14 +13,14 @@ function Navbar() {
             <a href="#home" className="nav-link">
               Home
             </a>
+            <a href="#showcase" className="nav-link">
+              Showcase
+            </a>
             <a href="#faq" className="nav-link">
               FAQ
             </a>
             <a href="#booking" className="nav-link">
               Booking
-            </a>
-            <a href="#showcase" className="nav-link">
-              Showcase
             </a>
           </div>
         </div>

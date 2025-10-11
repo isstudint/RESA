@@ -76,11 +76,6 @@ body {
   transition: color 0.3s ease;
 }
 
-.nav-link:hover {
-  /* WAALA PA; */
-}
-
-
 /* Hero Section */
 .hero-section {
   height: 100vh;
@@ -96,7 +91,7 @@ body {
 
 .hero-content {
   max-width: 600px;
-  background-color: #00464e18;
+  background-color: #00464e00;
   margin-left: 3rem;
   margin-bottom: 10vh;
 }
@@ -119,7 +114,7 @@ body {
   font-size: 1.5rem;
   margin-bottom: 2rem;
   color: #e0e0e0;
-  background-color: rgba(245, 245, 220, 0.096);
+  background-color: rgba(245, 245, 220, 0);
 }
 
 .cta-button {
@@ -222,11 +217,10 @@ model-viewer {
   display: block;
   margin: 0 auto;
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
   max-width: 1000px;
   width: 100%;
   height: 400px;
-  background: #808080;
+  background: #f7f7f7;
 }
 
 /* Responsive Design */
