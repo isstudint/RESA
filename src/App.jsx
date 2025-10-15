@@ -55,15 +55,6 @@ function HomePage() {
           src="/public/resa.glb"
           alt="RESA 3D Model"
           ar
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-          disable-tap
-=======
-
->>>>>>> Stashed changes
-=======
-
->>>>>>> Stashed changes
           environment-image="/public/brown_photostudio_02_2k.hdr"
           camera-controls
           shadow-intensity="2"
