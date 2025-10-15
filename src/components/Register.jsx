@@ -2,93 +2,78 @@ import React, { useState } from 'react';
 import '../css/Regist.css';
 
 function Register() {
-    // Simple state to track if we're showing sign in or sign up
     const [isSignUp, setIsSignUp] = useState(false);
 
-    // Function to switch between sign in and sign up
-    const switchToSignUp = () => setIsSignUp(true);
-    const switchToSignIn = () => setIsSignUp(false);
+    const switchToSignUp = (e) => { e.preventDefault(); setIsSignUp(true); };
+    const switchToSignIn = (e) => { e.preventDefault(); setIsSignUp(false); };
 
-    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(isSignUp ? 'Sign Up submitted' : 'Sign In submitted');
+        // place actual submit logic here
     };
 
     return (
         <div className="register-page">
-            {/* Background circles */}
-            <div className="bg-pattern">
+            <div className="bg-pattern" aria-hidden>
                 <div className="circle circle-large-tl"></div>
                 <div className="circle circle-medium-tl"></div>
                 <div className="circle circle-large-br"></div>
                 <div className="circle circle-medium-br"></div>
             </div>
-            
-            {/* Logo */}
+
             <div className="structiv-logo">STRUCTIV</div>
 
-            {/* Main card */}
-            <div className="auth-card">
-                {/* Image panel - changes order based on isSignUp */}
-                <div className={`image-panel ${isSignUp ? 'order-1' : 'order-2'}`}>
-                    <img 
-                        src="/src/images/hero.png"
-                        alt="Commercial Unit" 
-                    />
+            <div className={`auth-card ${isSignUp ? 'signup-mode' : ''}`}>
+
+                {/* Image panel (slides left/right depending on mode) */}
+                <div className="image-panel" aria-hidden={isSignUp ? "false" : "true"}>
+                    <img src="/src/images/hero.png" alt="Hero visual" />
                 </div>
-                
-                {/* Form panel - changes order based on isSignUp */}
-                <div className={`form-panel ${isSignUp ? 'order-2' : 'order-1'}`}>
+
+                {/* Form panel (slides opposite direction) */}
+                <div className="form-panel" role="region" aria-label={isSignUp ? "Sign up form" : "Sign in form"}>
+                    {/* Title */}
                     <h2 className="form-title">{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
-                    
+
+                    {/* Form */}
                     <form onSubmit={handleSubmit} className="form-layout">
-                        {/* Sign Up fields */}
                         {isSignUp && (
                             <>
                                 <div className="form-group">
-                                    <input type="text" placeholder="First Name" required className="form-input" />
-                                    <input type="text" placeholder="Last Name" required className="form-input" />
+                                    <input className="form-input" type="text" name="firstName" placeholder="First Name" required />
+                                    <input className="form-input" type="text" name="lastName" placeholder="Last Name" required />
                                 </div>
-                                <input type="text" placeholder="Username" required className="form-input" />
+                                <input className="form-input" type="text" name="username" placeholder="Username" required />
                             </>
                         )}
-                        
-                        {/* Common fields */}
-                        <input type="email" placeholder="Email" required className="form-input" />
-                        <input type="password" placeholder="Password" required className="form-input" />
-                        
-                        {/* Confirm password for sign up */}
+
+                        <input className="form-input" type="email" name="email" placeholder="Email" required />
+                        <input className="form-input" type="password" name="password" placeholder="Password" required />
+
                         {isSignUp && (
-                            <input type="password" placeholder="Confirm Password" required className="form-input" />
+                            <input className="form-input" type="password" name="confirmPassword" placeholder="Confirm Password" required />
                         )}
-                        
-                        {/* Forgot password for sign in */}
+
                         {!isSignUp && (
                             <div className="forgot-password">
-                                <a href="#">Forgot Password?</a>
+                                <a href="#" onClick={(e)=>e.preventDefault()}>Forgot Password?</a>
                             </div>
                         )}
 
-                        <button type="submit" className="btn-primary">
-                            {isSignUp ? 'Sign Up' : 'Login'}
-                        </button>
+                        <button type="submit" className="btn-primary">{isSignUp ? 'Sign Up' : 'Login'}</button>
                     </form>
-                    
-                    {/* Switch between forms */}
-                    {isSignUp ? (
-                        <div className="switch-link-container">
-                            <a href="#" onClick={switchToSignIn} className="switch-link">
-                                Already have an Account? Sign In
-                            </a>
-                        </div>
-                    ) : (
+
+                    {/* Switch controls */}
+                    {!isSignUp ? (
                         <>
                             <div className="form-divider"><span>Or</span></div>
-                            <button type="button" onClick={switchToSignUp} className="btn-link">
-                                Register a new account
-                            </button>
+                            <button type="button" className="btn-link" onClick={switchToSignUp}>Register a new account</button>
                         </>
+                    ) : (
+                        <div className="switch-link-container">
+                            <a href="#" onClick={switchToSignIn} className="switch-link">Already have an account? Sign In</a>
+                        </div>
                     )}
                 </div>
             </div>
