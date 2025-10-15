@@ -1,13 +1,11 @@
-
-        const formPanel = document.getElementById('form-panel');
+const formPanel = document.getElementById('form-panel');
         const imagePanel = document.getElementById('image-panel');
         const authImage = document.getElementById('auth-image');
 
         // State management for the current view ('signin' or 'signup')
         let currentView = 'signin';
-        let isTransitioning = false; // Flag to prevent rapid clicking issues
+        let isTransitioning = false;
 
-        // --- IMAGE URL (USING YOUR SPECIFIED PATH) ---
         const IMAGE_URL = "./images/untitled.png";
 
         /**
@@ -107,38 +105,50 @@
         /**
          * Main function to render the correct authentication form based on current state with fade transitions.
          */
-        function renderAuthForm(isInitialRender = false) {
-            const FADE_DURATION = 400; // 0.4 seconds, matching CSS animation
-            
-            // If the element has content, run fade-out transition first
-            if (formPanel.innerHTML && !isInitialRender) {
-                isTransitioning = true;
+        window.renderAuthForm = function(isInitialRender = false) {
+            // Wait for DOM elements to be available
+            setTimeout(() => {
+                const formPanel = document.getElementById('form-panel');
+                const imagePanel = document.getElementById('image-panel');
+                const authImage = document.getElementById('auth-image');
                 
-                // 1. Start the fade-out animation
-                formPanel.classList.add('form-fade-out');
+                if (!formPanel || !imagePanel || !authImage) {
+                    console.log('DOM elements not ready yet, retrying...');
+                    window.renderAuthForm(isInitialRender);
+                    return;
+                }
                 
-                // Wait for the animation duration (0.4s) before content replacement
-                setTimeout(() => {
-                    // 2. Clear fade-out and replace content
-                    formPanel.classList.remove('form-fade-out');
-                    formPanel.innerHTML = createFormContent(currentView);
+                const FADE_DURATION = 400;
+                
+                if (formPanel.innerHTML && !isInitialRender) {
+                    isTransitioning = true;
                     
-                    // 3. Start the fade-in animation
-                    formPanel.classList.add('form-fade-in');
-
-                    // Wait for fade-in duration
+                    // 1. Start the fade-out animation
+                    formPanel.classList.add('form-fade-out');
+                    
+                    // Wait for the animation duration (0.4s) before content replacement
                     setTimeout(() => {
-                        // 4. Clean up and allow next transition
-                        formPanel.classList.remove('form-fade-in');
-                        isTransitioning = false;
+                        // 2. Clear fade-out and replace content
+                        formPanel.classList.remove('form-fade-out');
+                        formPanel.innerHTML = createFormContent(currentView);
+                        
+                        // 3. Start the fade-in animation
+                        formPanel.classList.add('form-fade-in');
+
+                        // Wait for fade-in duration
+                        setTimeout(() => {
+                            // 4. Clean up and allow next transition
+                            formPanel.classList.remove('form-fade-in');
+                            isTransitioning = false;
+                        }, FADE_DURATION);
+
                     }, FADE_DURATION);
 
-                }, FADE_DURATION);
-
-            } else {
-                // Initial render (no animation needed)
-                formPanel.innerHTML = createFormContent(currentView);
-            }
+                } else {
+                    // Initial render (no animation needed)
+                    formPanel.innerHTML = createFormContent(currentView);
+                }
+            }, 100);
         }
 
         /**
@@ -180,4 +190,4 @@
         };
 
         // Initial render when the document is ready
-        document.addEventListener('DOMContentLoaded', () => renderAuthForm(true));
+        renderAuthForm(true);
