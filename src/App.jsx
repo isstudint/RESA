@@ -3,7 +3,8 @@ import HomePage from './components/Landing.jsx';
 import Register from './components/Register.jsx';
 import Navbar from './components/Nav.jsx';
 import Button from './components/button.jsx';
-import './css/style.css';
+import Dash from './components/dash.jsx';
+
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Register />} />
+        <Route path="/dash" element={<Dash />} />
         <Route path="/Nav" element={<Navbar />} />
         <Route path="/button" element={<Button />} />
         

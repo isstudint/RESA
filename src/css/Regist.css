@@ -40,6 +40,27 @@
     letter-spacing: 1px; 
 }
 
+/* Error and Success Messages */
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    border: 1px solid #fcc;
+}
+
+.success-message {
+    background-color: #efe;
+    color: #3a3;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    border: 1px solid #cfc;
+}
+
 /* Card */
 .auth-card {
     position: relative;

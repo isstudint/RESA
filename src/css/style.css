@@ -17,7 +17,8 @@
 
 
 :root{
-    font-family: 'regular', 'Arial';
+    font-family: 'regular', Arial, sans-serif;
+         /* background-color: red !important;   pang debug */
 }
 
 * {
@@ -131,9 +132,11 @@ body {
   transition: background-color 0.3s ease-in;
   text-transform: uppercase;
   letter-spacing: 1px;
+  transition: transform 0.3s ease-in;
 }
 
 .cta-button:hover {
+
   background-color: #0097a7;
   transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(0, 25, 29, 0.4);

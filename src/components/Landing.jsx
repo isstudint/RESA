@@ -1,7 +1,7 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'; 
 import Navbar from './Nav.jsx';
-import Button from './button.jsx';
-    
+import Button from './Button.jsx';
+import '../css/style.css';
 function HomePage() {
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ function HomePage() {
               that allows you to explore and acquire a unit of your very own
               home.
             </p>
-            <Button onClick={handleLoginClick} text="Get Started" />
+            <Button onClick={handleLoginClick} text={{ first: "Get", last: "Started" }} />
           </div>
         </div>
 

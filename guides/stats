@@ -1,0 +1,7 @@
+200 OK	
+201 Created	New data successfully added	You register → 
+400 Bad Request	You sent bad data	
+401 Unauthorized	You’re not logged in	
+403 Forbidden	You’re logged in but not allowed	
+404 Not Found	Server can’t find what you’re asking for	
+500 Internal Server Error	The server crashed	

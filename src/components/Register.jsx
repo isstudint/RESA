@@ -1,16 +1,83 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../css/Regist.css';
 
 function Register() {
-    const [isSignUp, setIsSignUp] = useState(false);
+    // State: Variables that update the UI
+    const [isSignUp, setIsSignUp] = useState(false);  // Toggle: login or signup
+    const [error, setError] = useState('');            // Error message
+    const [success, setSuccess] = useState('');        // Success message
+    const [loading, setLoading] = useState(false);     // Loading state
+    const navigate = useNavigate();                    // For changing pages
 
-    const switchToSignUp = (e) => { e.preventDefault(); setIsSignUp(true); };
-    const switchToSignIn = (e) => { e.preventDefault(); setIsSignUp(false); };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(isSignUp ? 'Sign Up submitted' : 'Sign In submitted');
-        // place actual submit logic here
+    // Switch to signup form
+    const switchToSignUp = (e) => { 
+        e.preventDefault(); 
+        setIsSignUp(true); 
+        setError(''); 
+        setSuccess(''); 
+    };
+    
+    // Switch to login form
+    const switchToSignIn = (e) => { 
+        e.preventDefault(); 
+        setIsSignUp(false); 
+        setError(''); 
+        setSuccess(''); 
+    };
+
+    // Handle form submission (login or signup)
+    const handleSubmit = async (e) => {
+        e.preventDefault();  // Don't refresh page
+        setError('');
+        setSuccess('');
+        setLoading(true);
+
+        // Get all form fields
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        // Choose API: /api/register or /api/login
+        const url = isSignUp ? '/api/register' : '/api/login';
+
+        try {
+            // Send data to backend
+            const response = await fetch(`http://localhost:5000${url}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            // Check if successful
+            if (response.ok) {
+                setSuccess(result.message);
+                
+                // If LOGIN: save user and go to dashboard
+                if (!isSignUp) {
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    setTimeout(() => navigate('/dash'), 1500);
+                } 
+                // If SIGNUP: switch to login form
+                else {
+                    setTimeout(() => {
+                        setIsSignUp(false);
+                        setSuccess('Registration successful! Please sign in.');
+                    }, 1500);
+                }
+            } else {
+                // Show error
+                setError(result.error || 'Something went wrong');
+            }
+        } catch {
+            // Connection error
+            setError('Cannot connect to server. Make sure the backend is running.');
+        } finally {
+            // Always turn off loading
+            setLoading(false);
+        }
     };
 
     return (
@@ -35,6 +102,10 @@ function Register() {
                 <div className="form-panel" role="region" aria-label={isSignUp ? "Sign up form" : "Sign in form"}>
                     {/* Title */}
                     <h2 className="form-title">{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
+
+                    {/* Error/Success Messages */}
+                    {error && <div className="error-message">{error}</div>}
+                    {success && <div className="success-message">{success}</div>}
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="form-layout">
@@ -61,7 +132,9 @@ function Register() {
                             </div>
                         )}
 
-                        <button type="submit" className="btn-primary">{isSignUp ? 'Sign Up' : 'Login'}</button>
+                        <button type="submit" className="btn-primary" disabled={loading}>
+                            {loading ? 'Please wait...' : (isSignUp ? 'Sign Up' : 'Login')}
+                        </button>
                     </form>
 
                     {/* Switch controls */}
