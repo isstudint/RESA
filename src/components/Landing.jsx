@@ -1,9 +1,53 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'; 
+import { useState, useEffect } from 'react';
 import Navbar from './Nav.jsx';
 import Button from './Button.jsx';
 import '../css/style.css';
 function HomePage() {
   const navigate = useNavigate();
+  const [scrollY, setScrollY] = useState(0);
+  const [selectedModel, setSelectedModel] = useState(0);
+
+  // Array of different models (you can add more models here)
+  const models = [
+    { 
+      name: 'Model 1', 
+      path: '/resa.glb',
+      hotspots: [
+        { position: '1m 2m 1m', title: 'Building Size', description: 'Total: 450 sq.m' },
+        { position: '-1m 1.5m 0m', title: 'Interior', description: 'Living: 120 sq.m' },
+        { position: '0m 0.5m -1m', title: 'Floor Area', description: 'Ground: 150 sq.m' },
+        { position: '1m 1m -1m', title: 'Commercial Units', description: 'Each: 45 sq.m' }
+      ]
+    },
+    { 
+      name: 'Model 2', 
+      path: '/try.glb',
+      hotspots: [
+        { position: '0.5m 1.5m 0.5m', title: 'Total Area', description: '350 sq.m' },
+        { position: '-0.5m 1m 0m', title: 'Bedrooms', description: '3 Rooms: 90 sq.m' },
+        { position: '0m 0.3m -0.5m', title: 'Kitchen', description: '25 sq.m' }
+      ]
+    },
+    { 
+      name: 'Model 3', 
+      path: '/resa.glb',
+      hotspots: [
+        { position: '1.2m 2.5m 1.2m', title: 'Penthouse', description: '200 sq.m' },
+        { position: '-1.2m 1.8m 0m', title: 'Terrace', description: '80 sq.m' },
+        { position: '0m 1m -1.2m', title: 'Parking', description: '2 Slots: 50 sq.m' }
+      ]
+    }
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLoginClick = () => {
     navigate('/login');
@@ -12,9 +56,9 @@ function HomePage() {
   return (
     <>
       <Navbar />
-      {/* 1ST SECTION */}
+      {/* 1ST SECTION - PARALLAX HERO */}
       <section className="hero-section">
-        <div className="hero-content">
+        <div className="hero-content" style={{ transform: `translateY(${scrollY * 0.5}px)` }}>
           <div className="hero-text">
             <h1 className="hero-title">STRUCTIV</h1>
             <p className="hero-subtitle">powered by RESA</p>
@@ -27,7 +71,7 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="hero-background">
+        <div className="hero-background" style={{ transform: `translateY(${scrollY * 0.3}px)` }}>
           <img src="./images/untitled.png" alt="" />
         </div>
       </section>
@@ -37,20 +81,57 @@ function HomePage() {
         <div className="arrow-down">↓</div>
       </div>
 
-      {/*  2ND SECTION */}
+      {/*  2ND SECTION - 3 IMAGE CARDS */}
       <section className="content-section">
         <div className="container">
-          <h2>Welcome to Structiv</h2>
-          <p>Explore our innovative approach to real estate visualization.</p>
+          <h2>LOREM IPSUM</h2>
+          <p className="section-subtitle">KHDJKSHD</p>
+          
+          <div className="cards-container">
+            <div className="image-card">
+              <div className="card-image">
+                <img src="/public/section.png" alt="" />
+              </div>
+            </div>
+            <div className="image-card">
+              <div className="card-image">
+                <img src="/public/section.png" alt="" />
+              </div>
+            </div>
+            <div className="image-card">
+              <div className="card-image">
+                <img src="/public/section.png" alt="" />
+              </div>
+            </div>
+          </div>
+
+          <p className="section-description">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisque faucibus ex sapien vitae 
+            pellentesque sem placerat. In id cursus mi pretium duis
+          </p>
         </div>
       </section>
 
-      {/* Third Section - Simple Model Viewer */}
+      {/* Third Section - Model Viewer with Switcher */}
       <section className="third-section">
         <h2>Building Showcase</h2>
-        <p>Explore our designs in 3D. Click and drag to rotate the model.</p>
+        <p>Choose a model to explore in 3D. Click and drag to rotate.</p>
+        
+        {/* Model Switcher Buttons */}
+        <div className="model-switcher">
+          {models.map((model, index) => (
+            <button
+              key={index}
+              className={`model-btn ${selectedModel === index ? 'active' : ''}`}
+              onClick={() => setSelectedModel(index)}
+            >
+              {model.name}
+            </button>
+          ))}
+        </div>
+
         <model-viewer
-          src="/public/resa.glb"
+          src={models[selectedModel].path}
           alt="RESA 3D Model"
           ar
           disable-tap
@@ -59,9 +140,25 @@ function HomePage() {
           shadow-intensity="2"
           loading="eager"
           reveal="auto"
-          max-camera-orbit="auto auto 30m"
-          interpolation-decay="30"
-        ></model-viewer>
+          max-camera-orbit="auto auto 20m"
+          interpolation-decay="50"
+        >
+          {/* Dynamic Hotspots based on selected model */}
+          {models[selectedModel].hotspots.map((hotspot, index) => (
+            <button 
+              key={index}
+              className="hotspot" 
+              slot={`hotspot-${index + 1}`}
+              data-position={hotspot.position}
+              data-normal="0m 1m 0m"
+            >
+              <div className="hotspot-annotation">
+                <div className="hotspot-title">{hotspot.title}</div>
+                <div className="hotspot-description">{hotspot.description}</div>
+              </div>
+            </button>
+          ))}
+        </model-viewer>
       </section>
     </>
   );

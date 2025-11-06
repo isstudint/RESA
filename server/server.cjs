@@ -41,7 +41,7 @@ app.post('/api/register', async (req, res) => {
     }
 
     // Encrypt password (security!)
-   // const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
     // Save to database
     const [result] = await db.query(
@@ -84,8 +84,19 @@ app.post('/api/login', async (req, res) => {
 
     const user = users[0];
 
+    // DEBUG: See what's actually stored
+    console.log('🔍 DEBUG - Login attempt:');
+    console.log('Email:', email);
+    console.log('Input password:', password);
+    console.log('Input password length:', password.length);
+    console.log('Stored password:', user.password);
+    console.log('Stored password length:', user.password.length);
+    console.log('Passwords match?', password === user.password);
+    console.log('Password starts with $2a (bcrypt hash)?', user.password.startsWith('$2a'));
+
     // Check if password matches
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    // const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = password === user.password;
 
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Invalid email or password' });
