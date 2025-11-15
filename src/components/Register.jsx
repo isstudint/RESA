@@ -57,8 +57,12 @@ function Register() {
                 
                 // If LOGIN: save user and go to dashboard
                 if (!isSignUp) {
+                    if (result.user.role === 'admin') {
+                        setTimeout(() => navigate('/dash_admin'), 1000);
+                    } else {
+                        setTimeout(() => navigate('/dash_user'), 1000);
+                    }
                     localStorage.setItem('user', JSON.stringify(result.user));
-                    setTimeout(() => navigate('/dash'), 1500);
                 } 
                 // If SIGNUP: switch to login form
                 else {

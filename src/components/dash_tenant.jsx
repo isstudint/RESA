@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/dash.css';
 
-function Dash() {
+function Dash_Tenant() {
     const [activeMenu, setActiveMenu] = useState('Dashboard');
     const navigate = useNavigate();
 
@@ -126,5 +125,5 @@ function Dash() {
     );
 }
 
-export default Dash;
+export default Dash_Tenant;
 

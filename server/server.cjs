@@ -69,9 +69,27 @@ app.post('/api/login', async (req, res) => {
     // Get email and password
     const { email, password } = req.body;
 
+    console.log('Login attempt - Email:', email, 'Password:', password);
+
     // Check if both provided
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Check for hardcoded admin login FIRST
+    if (email === 'admin@123' && password === 'admin123') {
+      console.log('Admin login successful!');
+      return res.json({
+        message: 'Login successful',
+        user: {
+          id: 0,
+          firstName: 'Admin',
+          lastName: 'User',
+          username: 'admin',
+          email: 'admin@123',
+          role: 'admin'
+        }
+      });
     }
 
     // Find user in database
@@ -85,14 +103,14 @@ app.post('/api/login', async (req, res) => {
     const user = users[0];
 
     // DEBUG: See what's actually stored
-    console.log('🔍 DEBUG - Login attempt:');
+    /*console.log('🔍 DEBUG - Login attempt:');
     console.log('Email:', email);
     console.log('Input password:', password);
     console.log('Input password length:', password.length);
     console.log('Stored password:', user.password);
     console.log('Stored password length:', user.password.length);
     console.log('Passwords match?', password === user.password);
-    console.log('Password starts with $2a (bcrypt hash)?', user.password.startsWith('$2a'));
+    console.log('Password starts with $2a (bcrypt hash)?', user.password.startsWith('$2a'));*/
 
     // Check if password matches
     // const isValidPassword = await bcrypt.compare(password, user.password);
@@ -110,7 +128,8 @@ app.post('/api/login', async (req, res) => {
         firstName: user.first_name,
         lastName: user.last_name,
         username: user.username,
-        email: user.email
+        email: user.email,
+        role: 'tenant'
       }
     });
 
@@ -120,6 +139,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Access from phone: http://YOUR_IP_HERE:${PORT}`);
 });

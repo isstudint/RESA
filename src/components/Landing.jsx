@@ -14,29 +14,21 @@ function HomePage() {
       name: 'Model 1', 
       path: '/resa.glb',
       hotspots: [
-        { position: '1m 2m 1m', title: 'Building Size', description: 'Total: 450 sq.m' },
-        { position: '-1m 1.5m 0m', title: 'Interior', description: 'Living: 120 sq.m' },
-        { position: '0m 0.5m -1m', title: 'Floor Area', description: 'Ground: 150 sq.m' },
-        { position: '1m 1m -1m', title: 'Commercial Units', description: 'Each: 45 sq.m' }
+        { position: '5m 0m 0m', title: 'Building Size', description: 'Total: 450 sq.m' },
+        { position: '1.91m 1.5m 0m', title: 'Interior', description: 'Living: 120 sq.m' },
+        { position: '0.61m -0.46m 1.29m', title: 'Floor Area', description: 'Ground: 150 sq.m' },
+        { position: '10m 1m 2m', title: 'Commercial Units', description: 'Each: 45 sq.m' }
       ]
     },
     { 
       name: 'Model 2', 
       path: '/try.glb',
-      hotspots: [
-        { position: '0.5m 1.5m 0.5m', title: 'Total Area', description: '350 sq.m' },
-        { position: '-0.5m 1m 0m', title: 'Bedrooms', description: '3 Rooms: 90 sq.m' },
-        { position: '0m 0.3m -0.5m', title: 'Kitchen', description: '25 sq.m' }
-      ]
+      hotspots: []
     },
     { 
       name: 'Model 3', 
       path: '/resa.glb',
-      hotspots: [
-        { position: '1.2m 2.5m 1.2m', title: 'Penthouse', description: '200 sq.m' },
-        { position: '-1.2m 1.8m 0m', title: 'Terrace', description: '80 sq.m' },
-        { position: '0m 1m -1.2m', title: 'Parking', description: '2 Slots: 50 sq.m' }
-      ]
+      hotspots: []
     }
   ];
 
