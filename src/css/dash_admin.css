@@ -541,15 +541,24 @@
   color: #666;
 }
 
-model-viewer {
+.profile-section {
+  background: rgb(255, 255, 255);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid #130a0a;
+  margin-top: 2rem;
+}
+
+/* Dashboard specific model-viewer */
+.dashboard-content model-viewer {
   display: block;
   margin: 0 auto;
   border-radius: 16px;
   max-width: 2000px;
   width: 100%;
   height: 900px;
-  background: #000000;
 }
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .admin-sidebar {

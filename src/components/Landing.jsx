@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Navbar from './Nav.jsx';
 import Button from './Button.jsx';
 import '../css/style.css';
+
 function HomePage() {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
@@ -48,9 +49,9 @@ function HomePage() {
   return (
     <>
       <Navbar />
-      {/* 1ST SECTION - PARALLAX HERO */}
+      {/* 1ST SECTION - HERO */}
       <section className="hero-section">
-        <div className="hero-content" style={{ transform: `translateY(${scrollY * 0.5}px)` }}>
+        <div className="hero-content">
           <div className="hero-text">
             <h1 className="hero-title">STRUCTIV</h1>
             <p className="hero-subtitle">powered by RESA</p>
@@ -63,8 +64,8 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="hero-background" style={{ transform: `translateY(${scrollY * 0.3}px)` }}>
-          <img src="./images/untitled.png" alt="" />
+        <div className="hero-background" style={{ transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0003})` }}>
+          <img src="/public/hero.png" alt="" />
         </div>
       </section>
 
@@ -73,13 +74,31 @@ function HomePage() {
         <div className="arrow-down">↓</div>
       </div>
 
-      {/*  2ND SECTION - 3 IMAGE CARDS */}
+      {/*  2ND SECTION - IMAGE CARDS */}
       <section className="content-section">
         <div className="container">
           <h2>LOREM IPSUM</h2>
           <p className="section-subtitle">KHDJKSHD</p>
           
           <div className="cards-container">
+            <div className="image-card">
+              <div className="card-image">
+                <img src="/public/section.png" alt="" />
+              </div>
+            </div>
+            <div className="image-card">
+              <div className="card-image">
+                <img src="/public/section.png" alt="" />
+              </div>
+            </div>
+            <div className="image-card">
+              <div className="card-image">
+                <img src="/public/section.png" alt="" />
+              </div>
+            </div>
+          </div>
+
+          <div className="cards-container cards-container-bottom">
             <div className="image-card">
               <div className="card-image">
                 <img src="/public/section.png" alt="" />
@@ -126,13 +145,14 @@ function HomePage() {
           src={models[selectedModel].path}
           alt="RESA 3D Model"
           ar
-          disable-tap
-          environment-image="/public/brown_photostudio_02_2k.hdr"
           camera-controls
+          environment-image="/public/brown_photostudio_02_2k.hdr"
           shadow-intensity="2"
           loading="eager"
           reveal="auto"
+          min-camera-orbit="auto auto 5m"
           max-camera-orbit="auto auto 20m"
+          camera-orbit="0deg 75deg 12m"
           interpolation-decay="50"
         >
           {/* Dynamic Hotspots based on selected model */}

@@ -1,19 +1,28 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import '../css/dash_admin.css';
+import '../css/settings.css';
 import Setting from'../assets/setting.svg';
 import Home from "../assets/home.png";
 import Key from "../assets/key.png";
 import Property from "../assets/property.png";
 import UnitModal from './UnitModal';
 import Sidebar from './sidebar';
+import EditProfileModal from './EditProfileModal';
 
 function DashUser() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [selectedModel, setSelectedModel] = useState(0);
-
+  const [settingsTab, setSettingsTab] = useState('profile');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
   const models = [
     {
       name: 'Commercial Building',
@@ -22,7 +31,7 @@ function DashUser() {
     },
     {
       name: 'Unit Interior',
-      src: '/unit_interior.glb',
+      src: '/try.glb',
       description: 'Interior unit layout'
     },
     {
@@ -43,6 +52,47 @@ function DashUser() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/');
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPasswordMessage({ type: '', text: '' });
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'New passwords do not match' });
+      return;
+    }
+
+    try {
+      const userData = JSON.parse(localStorage.getItem('user'));
+      const response = await fetch('http://localhost:5000/api/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userData.id,
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setPasswordMessage({ type: 'success', text: 'Password changed successfully' });
+        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        setPasswordMessage({ type: 'error', text: result.error || 'Failed to change password' });
+      }
+    } catch {
+      setPasswordMessage({ type: 'error', text: 'Cannot connect to server. Make sure backend is running.' });
+    }
+  };
+
+  const handleSaveProfile = (formData) => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    const updatedUser = { ...userData, ...formData };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    window.location.reload();
   };
 
   const units = [
@@ -209,13 +259,123 @@ function DashUser() {
             <p>Manage inquiries</p>
           </div>
         );
-      case 'settings':
+      case 'settings':{
+        const userData = JSON.parse(localStorage.getItem('user'));
+        const initials = `${userData?.firstName?.[0] || ''}${userData?.lastName?.[0] || ''}`.toUpperCase();
+        
         return (
-          <div className="content-section">
-            <h2>Settings</h2>
-            <p>Configure preferences</p>
+          <div className="dashboard-content">
+            <div className="building-header">
+              <div className="building-header-info">
+                <h2>Settings</h2>
+              </div>
+            </div>
+
+            <div className="settings-tabs">
+              <button 
+                className={`settings-tab ${settingsTab === 'profile' ? 'active' : ''}`}
+                onClick={() => setSettingsTab('profile')}
+              >
+                Profile Setting
+              </button>
+              <button 
+                className={`settings-tab ${settingsTab === 'password' ? 'active' : ''}`}
+                onClick={() => setSettingsTab('password')}
+              >
+                Password
+              </button>
+            </div>
+
+            {settingsTab === 'profile' ? (
+              <>
+                <div className="settings-card">
+                  <div className="settings-card-header">
+                    <div>
+                      <h3>Profile</h3>
+                      <p>Update your profile</p>
+                    </div>
+                    <button className="edit-btn" onClick={() => setShowEditModal(true)}>Edit</button>
+                  </div>
+                  <div className="profile-photo-section">
+                    <div className="profile-initials">{initials}</div>
+                  </div>
+                  <div className="info-field">
+                    <label>Username</label>
+                    <p>{userData?.username || ''}</p>
+                  </div>
+                </div>
+
+                <div className="settings-card">
+                  <div className="settings-card-header">
+                    <div>
+                      <h3>Account Information</h3>
+                      <p>Your personal information</p>
+                    </div>
+                  </div>
+                  <div className="info-field">
+                    <label>Name</label>
+                    <p>{`${userData?.firstName || ''} ${userData?.lastName || ''}`}</p>
+                  </div>
+                  <div className="info-field">
+                    <label>Email</label>
+                    <p>{userData?.email || ''}</p>
+                  </div>
+                  <div className="info-field">
+                    <label>Contact Number</label>
+                    <p>{userData?.contactNumber || 'Not set'}</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="settings-card">
+                <div className="settings-card-header">
+                  <div>
+                    <h3>Change Password</h3>
+                    <p>Update your account password</p>
+                  </div>
+                </div>
+
+                {passwordMessage.text && (
+                  <div className={`password-message ${passwordMessage.type}`}>
+                    {passwordMessage.text}
+                  </div>
+                )}
+
+                <form onSubmit={handlePasswordChange}>
+                  <div className="settings-field">
+                    <label>Current Password</label>
+                    <input 
+                      type="password" 
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="settings-field">
+                    <label>New Password</label>
+                    <input 
+                      type="password" 
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="settings-field">
+                    <label>Confirm New Password</label>
+                    <input 
+                      type="password" 
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="save-password-btn">Change Password</button>
+                </form>
+              </div>
+            )}
           </div>
         );
+      }
       default:
         return null;
     }
@@ -242,6 +402,15 @@ function DashUser() {
         <UnitModal 
           unit={selectedUnit} 
           onClose={() => setSelectedUnit(null)} 
+        />
+      )}
+
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <EditProfileModal 
+          userData={JSON.parse(localStorage.getItem('user'))}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleSaveProfile}
         />
       )}
     </div>

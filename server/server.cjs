@@ -139,7 +139,42 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+// ===================================
+// CHANGE PASSWORD
+// ===================================
+app.post('/api/change-password', async (req, res) => {
+  try {
+    const { userId, currentPassword, newPassword } = req.body;
+
+    if (!userId || !currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Get user from database
+    const [users] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
+
+    if (users.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = users[0];
+
+    // Verify current password
+    if (currentPassword !== user.password) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Update password
+    await db.query('UPDATE users SET password = ? WHERE id = ?', [newPassword, userId]);
+
+    res.json({ message: 'Password changed successfully' });
+
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ error: 'Server error during password change' });
+  }
+});
+
+app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Access from phone: http://YOUR_IP_HERE:${PORT}`);
 });
