@@ -26,6 +26,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "regular";
   line-height: 1.5;
@@ -60,7 +64,7 @@ body {
   min-height: 100vh;
 }
 
-/* OLD NAVBAR STYLES REMOVED - Using new BAMO-style navbar below */
+/* Main Layout Styles */
 
 /* Hero Section - Simplified for Video Background */
 .hero-section {
@@ -227,157 +231,83 @@ model-viewer {
   border-radius: 16px;
   max-width: 1000px;
   width: 100%;
-  height: 500px;
+  height: 600px;
+  background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
 }
 
-/* 3D Model Hotspots */
-.hotspot {
-  background: #ffffff;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
+/* Model Viewer Container */
+.model-viewer-container {
   position: relative;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.hotspot::before {
-  content: "";
+/* Reset View Button */
+.reset-view-btn {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 12px;
-  height: 12px;
-  background: #0097a7;
-  border-radius: 50%;
-}
-
-.hotspot:hover {
-  width: 32px;
-  height: 32px;
-  background: #0097a7;
-}
-
-.hotspot:hover::before {
-  background: white;
-}
-
-.hotspot-annotation {
-  position: absolute;
-  bottom: 35px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 0.75rem 1rem;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: "medium";
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.hotspot:hover .hotspot-annotation {
-  opacity: 1;
-}
-
-.hotspot-title {
   font-size: 0.9rem;
-  font-weight: bold;
-  margin-bottom: 0.25rem;
-  color: #0097a7;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 5;
 }
 
-.hotspot-description {
-  font-size: 0.8rem;
-  color: #ffffff;
+.reset-view-btn:hover {
+  background: #0097a7;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3);
+}
+
+.reset-view-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.model-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 16px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0097a7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design */
-@media screen and (max-width: 768px) {
-  .nav-menu {
-    position: fixed;
-    left: -100%;
-    top: 70px;
-    flex-direction: column;
-    background-color: rgba(0, 0, 0, 0.9);
-    width: 100%;
-    text-align: center;
-    transition: 0.3s;
-    padding: 2rem 0;
-  }
-
-  .nav-menu-active {
-    left: 0;
-  }
-
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1rem;
-  }
-
-  .hero-description {
-    font-size: 1rem;
-  }
-
-  .nav-container {
-    padding: 0 1rem;
-  }
-
-  .content-section h2 {
-    font-size: 2rem;
-  }
-
-  .cards-container {
-    gap: 1rem;
-  }
-
-  .image-card {
-    width: 240px;
-    height: 280px;
-  }
-
-  .model-switcher {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .model-btn {
-    padding: 0.5rem 1.5rem;
-    font-size: 0.9rem;
-  }
-
-  .third-section {
-    padding: 2rem 0 1rem 0;
-  }
-  model-viewer {
-    height: 250px;
-    max-width: 100%;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .logo {
-    font-size: 1.5rem;
-  }
-
-  .cta-button {
-    padding: 10px 25px;
-    font-size: 1rem;
-  }
-}
 
 /* Additional animations */
 
@@ -758,5 +688,119 @@ html {
   .typography-container {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+/* =========================================
+   FOOTER STYLES
+   ========================================= */
+.footer {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 80px 0 30px;
+  margin-top: auto;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.footer-logo {
+  font-family: "coolvetica";
+  font-size: 2rem;
+  margin-bottom: 20px;
+  background: linear-gradient(45deg, #fff, #ccc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.footer-description {
+  color: #999;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.footer-heading {
+  font-family: "medium";
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+  color: #fff;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  color: #999;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.footer-links a:hover {
+  color: #fff;
+}
+
+.footer-social {
+  display: flex;
+  gap: 16px;
+}
+
+.social-icon {
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  background: #fff;
+  color: #000;
+  transform: translateY(-3px);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 30px;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Responsive Footer */
+@media (max-width: 968px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .footer {
+    padding: 60px 0 30px;
   }
 }

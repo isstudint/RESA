@@ -1,7 +1,8 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import Navbar from "./Nav.jsx";
 import Button from "./Button.jsx";
+import Footer from "./Footer.jsx";
 import "../css/style.css";
 
 function HomePage() {
@@ -13,43 +14,19 @@ function HomePage() {
   const sectionRefs = useRef([]);
   const modelViewerRef = useRef(null);
 
-  // Array of different models (you can add more models here)
+  // Array of different models
   const models = [
     {
       name: "Model 1",
       path: "/resa.glb",
-      hotspots: [
-        {
-          position: "5m 0m 0m",
-          title: "Building Size",
-          description: "Total: 450 sq.m",
-        },
-        {
-          position: "1.91m 1.5m 0m",
-          title: "Interior",
-          description: "Living: 120 sq.m",
-        },
-        {
-          position: "0.61m -0.46m 1.29m",
-          title: "Floor Area",
-          description: "Ground: 150 sq.m",
-        },
-        {
-          position: "10m 1m 2m",
-          title: "Commercial Units",
-          description: "Each: 45 sq.m",
-        },
-      ],
     },
     {
       name: "Model 2",
       path: "/try.glb",
-      hotspots: [],
     },
     {
       name: "Model 3",
       path: "/resa.glb",
-      hotspots: [],
     },
   ];
 
@@ -99,6 +76,14 @@ function HomePage() {
     }, 500);
   };
 
+  // Reset camera view to initial position
+  const resetView = () => {
+    if (modelViewerRef.current) {
+      modelViewerRef.current.cameraOrbit = "-30deg 75deg 8m";
+      modelViewerRef.current.fieldOfView = "45deg";
+    }
+  };
+
   const handleLoginClick = () => {
     navigate("/login");
   };
@@ -112,7 +97,7 @@ function HomePage() {
       <Navbar />
 
       {/* 1ST SECTION - HERO WITH PARALLAX */}
-      <section className="hero-section">
+      <section id="hero" className="hero-section">
         {/* Video/Image Background */}
         <div
           className="hero-background zoom-effect"
@@ -132,11 +117,9 @@ function HomePage() {
           }}
         >
           <div className="hero-text-left">
-            <p className="hero-subtitle-small">Immersive approach</p>
+            <p className="hero-subtitle-small">Piazza Amariluna Commercial Unit</p>
             <p className="hero-description-left">
-              An innovative system made for Piazza Amariluna Commercial Unit
-              that allows you to explore and acquire a unit of your very own
-              home.
+              lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
             <div className="hero-cta-wrapper">
               <Button onClick={handleLoginClick} text="Get Started" />
@@ -155,13 +138,14 @@ function HomePage() {
 
       {/* 2ND SECTION - SPLIT LAYOUT (Stone Grating) */}
       <section
+        id="process"
         className="split-section scroll-animate"
         ref={(el) => (sectionRefs.current[0] = el)}
       >
         <div className="split-container">
           <div className="split-text">
             <h2>
-              Decorative stone grating
+              Lorem Ipsum
               <br />
               for modern urban living.
             </h2>
@@ -202,11 +186,10 @@ function HomePage() {
         ref={(el) => (sectionRefs.current[2] = el)}
       >
         <div className="typography-container">
-          <h2 className="huge-text">Made to matter</h2>
+          <h2 className="huge-text">Lorem Ipsum tur Vevet</h2>
           <div className="typography-content">
             <p>
-              Contemporary engineered stonework solutions. Built for everyday
-              living, from the ground up.
+              piazza amariluna commercial unit is a modern and innovative system that allows you to explore and acquire a unit of your business.
             </p>
           </div>
         </div>
@@ -214,6 +197,7 @@ function HomePage() {
 
       {/* 5TH SECTION - 3D MODEL VIEWER */}
       <section
+        id="showcase"
         className="third-section scroll-animate"
         ref={(el) => (sectionRefs.current[3] = el)}
       >
@@ -251,37 +235,45 @@ function HomePage() {
             alt="RESA 3D Model"
             ar
             camera-controls
-            style={{ touchAction: "none" }}
+            touch-action="pan-y"
             environment-image="/brown_photostudio_02_2k.hdr"
-            shadow-intensity="2"
+            exposure="1.2"
+            shadow-intensity="1.5"
+            shadow-softness="0.8"
+            tone-mapping="commerce"
             loading="eager"
             reveal="auto"
-            min-camera-orbit="auto auto 5m"
-            max-camera-orbit="auto auto 20m"
-            camera-orbit="0deg 75deg 12m"
-            interpolation-decay="50"
+            min-camera-orbit="-60deg 60deg 3m"
+            max-camera-orbit="60deg 90deg 20m"
+            camera-orbit="-30deg 75deg 8m"
+            field-of-view="45deg"
+            interpolation-decay="100"
             interaction-prompt="none"
-          >
-            {/* Dynamic Hotspots based on selected model */}
-            {models[selectedModel].hotspots.map((hotspot, index) => (
-              <button
-                key={index}
-                className="hotspot"
-                slot={`hotspot-${index + 1}`}
-                data-position={hotspot.position}
-                data-normal="0m 1m 0m"
-              >
-                <div className="hotspot-annotation">
-                  <div className="hotspot-title">{hotspot.title}</div>
-                  <div className="hotspot-description">
-                    {hotspot.description}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </model-viewer>
+            disable-pan
+          ></model-viewer>
+
+          {/* Reset View Button */}
+          <button className="reset-view-btn" onClick={resetView}>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+              <path d="M21 3v5h-5" />
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+              <path d="M3 21v-5h5" />
+            </svg>
+            Reset View
+          </button>
         </div>
       </section>
+
+      {/* FOOTER */}
+      <Footer />
     </>
   );
 }

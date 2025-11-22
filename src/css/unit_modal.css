@@ -1,14 +1,14 @@
 @font-face {
-    font-family: 'regular';
-    src: url(../fonts/DMSans-Regular.ttf) format('truetype');
+  font-family: "regular";
+  src: url(../fonts/DMSans-Regular.ttf) format("truetype");
 }
 @font-face {
-    font-family: 'bold';
-    src: url(../fonts/DMSans-Bold.ttf) format('truetype');
+  font-family: "bold";
+  src: url(../fonts/DMSans-Bold.ttf) format("truetype");
 }
 @font-face {
-    font-family: 'medium';
-    src: url(../fonts/DMSans-Medium.ttf) format('truetype');
+  font-family: "medium";
+  src: url(../fonts/DMSans-Medium.ttf) format("truetype");
 }
 
 .modal-overlay {
@@ -73,6 +73,53 @@
   object-fit: cover;
 }
 
+/* Image Navigation Arrows */
+.image-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+  color: #1a1a1a;
+  transition: all 0.2s;
+  z-index: 5;
+}
+
+.image-nav-btn:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.image-nav-btn.prev {
+  left: 1rem;
+}
+
+.image-nav-btn.next {
+  right: 1rem;
+}
+
+/* Image Counter */
+.image-counter {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-family: "medium";
+  font-size: 0.875rem;
+  z-index: 5;
+}
+
 .modal-badge {
   position: absolute;
   top: 1rem;
@@ -80,7 +127,7 @@
   background: white;
   padding: 0.5rem 1rem;
   border-radius: 4px;
-  font-family: 'medium';
+  font-family: "medium";
   font-size: 0.875rem;
   color: #1a1a1a;
   border: 1px solid #e0e0e0;
@@ -91,14 +138,14 @@
 }
 
 .modal-body h2 {
-  font-family: 'bold';
+  font-family: "bold";
   font-size: 1.75rem;
   color: #1a1a1a;
   margin: 0 0 0.5rem 0;
 }
 
 .modal-location {
-  font-family: 'regular';
+  font-family: "regular";
   font-size: 0.875rem;
   color: #666;
   margin: 0 0 2rem 0;
@@ -120,7 +167,7 @@
 }
 
 .detail-label {
-  font-family: 'regular';
+  font-family: "regular";
   font-size: 0.75rem;
   color: #999;
   text-transform: uppercase;
@@ -128,7 +175,7 @@
 }
 
 .detail-value {
-  font-family: 'medium';
+  font-family: "medium";
   font-size: 1rem;
   color: #1a1a1a;
 }
@@ -140,13 +187,13 @@
 }
 
 .status-label {
-  font-family: 'medium';
+  font-family: "medium";
   font-size: 0.875rem;
   color: #666;
 }
 
 .status-badge {
-  font-family: 'medium';
+  font-family: "medium";
   font-size: 0.875rem;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -172,7 +219,7 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .modal-image {
     height: 200px;
   }

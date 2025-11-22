@@ -49,17 +49,17 @@ function Navbar() {
       {/* Dropdown Menu Overlay */}
       <div className={`nav-overlay ${isOpen ? "open" : ""}`}>
         <div className="nav-menu-items">
-          <a href="#home" className="nav-link" onClick={toggleMenu}>
+          <a href="#hero" className="nav-link" onClick={toggleMenu}>
             Home
+          </a>
+          <a href="#process" className="nav-link" onClick={toggleMenu}>
+            Process
           </a>
           <a href="#showcase" className="nav-link" onClick={toggleMenu}>
             Showcase
           </a>
-          <a href="#faq" className="nav-link" onClick={toggleMenu}>
-            FAQ
-          </a>
-          <a href="#booking" className="nav-link" onClick={toggleMenu}>
-            Booking
+          <a href="/login" className="nav-link" onClick={toggleMenu}>
+            Login
           </a>
         </div>
       </div>
