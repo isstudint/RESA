@@ -120,6 +120,7 @@ function Register() {
                                     <input className="form-input" type="text" name="lastName" placeholder="Last Name" required />
                                 </div>
                                 <input className="form-input" type="text" name="username" placeholder="Username" required />
+                                <input className="form-input" type="tel" name="contactNumber" placeholder="Contact Number" />
                             </>
                         )}
 

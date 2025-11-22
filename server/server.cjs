@@ -23,7 +23,7 @@ app.get('/api/test', (req, res) => {
 app.post('/api/register', async (req, res) => {
   try {
     // Get data from form
-    const { firstName, lastName, username, email, password } = req.body;
+    const { firstName, lastName, username, email, contactNumber, password } = req.body;
 
     // Check if all fields filled
     if (!firstName || !lastName || !username || !email || !password) {
@@ -45,8 +45,8 @@ app.post('/api/register', async (req, res) => {
 
     // Save to database
     const [result] = await db.query(
-      'INSERT INTO users (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)',
-      [firstName, lastName, username, email, password]
+      'INSERT INTO users (first_name, last_name, username, email, contact_number, password) VALUES (?, ?, ?, ?, ?, ?)',
+      [firstName, lastName, username, email, contactNumber || null, password]
     );
 
     // Send success
@@ -129,6 +129,7 @@ app.post('/api/login', async (req, res) => {
         lastName: user.last_name,
         username: user.username,
         email: user.email,
+        contactNumber: user.contact_number,
         role: 'tenant'
       }
     });
