@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/dash_admin.css";
+import "../css/bookings.css";
 import Sidebar from "./sidebar";
 import AdminUnitModal from "./AdminUnitModal";
+import RescheduleModal from "./RescheduleModal";
+import MessageModal from "./MessageModal";
 
 function DashAdmin() {
   const navigate = useNavigate();
@@ -16,8 +19,11 @@ function DashAdmin() {
   const [units, setUnits] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [editingUnit, setEditingUnit] = useState(null);
-
-  // Form states
+  const [bookingStatusFilter, setBookingStatusFilter] = useState("Pending");
+  const [selectedBookingForReschedule, setSelectedBookingForReschedule] =
+    useState(null);
+  const [selectedBookingForMessage, setSelectedBookingForMessage] =
+    useState(null);
   const [newUser, setNewUser] = useState({
     firstName: "",
     lastName: "",
@@ -387,14 +393,77 @@ function DashAdmin() {
             </div>
           </div>
         );
-      case "bookings":
+      case "bookings": {
+        const filteredBookings = bookings.filter(
+          (b) => b.status === bookingStatusFilter
+        );
+
+        const handleApproveBooking = async (bookingId) => {
+          try {
+            const response = await fetch(
+              `http://localhost:5000/api/bookings/${bookingId}`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "Approved" }),
+              }
+            );
+            if (response.ok) {
+              fetchBookings();
+              fetchStats();
+            }
+          } catch (error) {
+            console.error("Error approving booking:", error);
+          }
+        };
+
+        const handleDeclineBooking = async (bookingId) => {
+          try {
+            const response = await fetch(
+              `http://localhost:5000/api/bookings/${bookingId}`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "Declined" }),
+              }
+            );
+            if (response.ok) {
+              fetchBookings();
+              fetchStats();
+            }
+          } catch (error) {
+            console.error("Error declining booking:", error);
+          }
+        };
+
         return (
           <div className="content-section">
-            <h2>Bookings</h2>
+            <h2>Bookings Management</h2>
             <div className="booking-tabs">
-              <button className="tab-btn active">Request</button>
-              <button className="tab-btn">Approved</button>
-              <button className="tab-btn">Declined</button>
+              <button
+                className={`tab-btn ${
+                  bookingStatusFilter === "Pending" ? "active" : ""
+                }`}
+                onClick={() => setBookingStatusFilter("Pending")}
+              >
+                Pending
+              </button>
+              <button
+                className={`tab-btn ${
+                  bookingStatusFilter === "Approved" ? "active" : ""
+                }`}
+                onClick={() => setBookingStatusFilter("Approved")}
+              >
+                Approved
+              </button>
+              <button
+                className={`tab-btn ${
+                  bookingStatusFilter === "Declined" ? "active" : ""
+                }`}
+                onClick={() => setBookingStatusFilter("Declined")}
+              >
+                Declined
+              </button>
             </div>
             <div className="bookings-table-container">
               <table className="bookings-table">
@@ -402,27 +471,54 @@ function DashAdmin() {
                   <tr>
                     <th>Name</th>
                     <th>Unit</th>
-                    <th>Email</th>
-                    <th>Booking Date</th>
+                    <th>Contact</th>
+                    <th>Facebook</th>
+                    <th>Meeting</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {bookings.length === 0 ? (
+                  {filteredBookings.length === 0 ? (
                     <tr>
-                      <td colSpan="6">No bookings found</td>
+                      <td colSpan="7">
+                        No {bookingStatusFilter.toLowerCase()} bookings found
+                      </td>
                     </tr>
                   ) : (
-                    bookings.map((booking) => (
+                    filteredBookings.map((booking) => (
                       <tr key={booking.id}>
                         <td>
                           {booking.first_name} {booking.last_name}
+                          <br />
+                          <small style={{ color: "#6b7280" }}>
+                            {booking.email}
+                          </small>
                         </td>
                         <td>{booking.unit_name}</td>
-                        <td>{booking.email}</td>
+                        <td>{booking.contact_number || "N/A"}</td>
                         <td>
-                          {new Date(booking.created_at).toLocaleDateString()}
+                          {booking.facebook_link ? (
+                            <a
+                              href={booking.facebook_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "#2563eb" }}
+                            >
+                              View Profile
+                            </a>
+                          ) : (
+                            "N/A"
+                          )}
+                        </td>
+                        <td>
+                          {new Date(booking.meeting_date).toLocaleDateString()}
+                          {booking.meeting_time && (
+                            <>
+                              <br />
+                              <small>{booking.meeting_time}</small>
+                            </>
+                          )}
                         </td>
                         <td>
                           <span
@@ -432,8 +528,101 @@ function DashAdmin() {
                           </span>
                         </td>
                         <td>
-                          <button className="action-btn approve">✓</button>
-                          <button className="action-btn decline">✗</button>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "0.5rem",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {booking.status === "Pending" && (
+                              <>
+                                <button
+                                  className="action-btn approve"
+                                  onClick={() =>
+                                    handleApproveBooking(booking.id)
+                                  }
+                                  title="Approve"
+                                >
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                  >
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                  </svg>
+                                </button>
+                                <button
+                                  className="action-btn decline"
+                                  onClick={() =>
+                                    handleDeclineBooking(booking.id)
+                                  }
+                                  title="Decline"
+                                >
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                  >
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                  </svg>
+                                </button>
+                              </>
+                            )}
+                            <button
+                              className="action-btn reschedule-btn"
+                              onClick={() =>
+                                setSelectedBookingForReschedule(booking)
+                              }
+                              title="Reschedule"
+                            >
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <rect
+                                  x="3"
+                                  y="4"
+                                  width="18"
+                                  height="18"
+                                  rx="2"
+                                  ry="2"
+                                ></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                              </svg>
+                            </button>
+                            <button
+                              className="action-btn message-btn"
+                              onClick={() =>
+                                setSelectedBookingForMessage(booking)
+                              }
+                              title="Message"
+                            >
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                              </svg>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -443,6 +632,7 @@ function DashAdmin() {
             </div>
           </div>
         );
+      }
       case "settings":
         return (
           <div className="content-section">
@@ -472,6 +662,26 @@ function DashAdmin() {
           unit={editingUnit}
           onClose={() => setEditingUnit(null)}
           onSave={handleSaveUnit}
+        />
+      )}
+
+      {/* Reschedule Modal */}
+      {selectedBookingForReschedule && (
+        <RescheduleModal
+          booking={selectedBookingForReschedule}
+          onClose={() => setSelectedBookingForReschedule(null)}
+          onSuccess={() => {
+            fetchBookings();
+            setSelectedBookingForReschedule(null);
+          }}
+        />
+      )}
+
+      {/* Message Modal */}
+      {selectedBookingForMessage && (
+        <MessageModal
+          booking={selectedBookingForMessage}
+          onClose={() => setSelectedBookingForMessage(null)}
         />
       )}
     </div>

@@ -44,10 +44,26 @@ CREATE TABLE bookings (
   unit_id INT,
   booking_date DATE,
   meeting_date DATE,
+  facebook_link VARCHAR(255),
+  meeting_time TIME,
+  contact_number VARCHAR(20),
+  admin_message TEXT,
   status ENUM('Pending', 'Approved', 'Declined') DEFAULT 'Pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (unit_id) REFERENCES units(id) ON DELETE CASCADE
+);
+
+-- ===================================
+-- BOOKING MESSAGES TABLE
+-- ===================================
+CREATE TABLE booking_messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  booking_id INT NOT NULL,
+  sender_type ENUM('admin', 'user') NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
 );
 
 -- ===================================

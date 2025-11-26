@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/dash_admin.css";
 import "../css/settings.css";
+import "../css/bookings.css";
 import Setting from "../assets/setting.svg";
 import Home from "../assets/home.png";
 import Key from "../assets/key.png";
@@ -9,6 +10,9 @@ import Property from "../assets/property.png";
 import UnitModal from "./UnitModal";
 import Sidebar from "./sidebar";
 import EditProfileModal from "./EditProfileModal";
+import BookingForm from "./BookingForm";
+import FAQSection from "./FAQSection";
+import UserBookingModal from "./UserBookingModal";
 
 function DashUser() {
   const navigate = useNavigate();
@@ -26,6 +30,13 @@ function DashUser() {
     type: "",
     text: "",
   });
+  const [activeBookingTab, setActiveBookingTab] = useState("all");
+  const [selectedBookingUnit, setSelectedBookingUnit] = useState(null);
+  const [selectedUserBooking, setSelectedUserBooking] = useState(null);
+  const [userBookings, setUserBookings] = useState([]);
+
+  const modelViewerRef = useRef(null);
+
   const models = [
     {
       name: "Commercial Building",
@@ -119,6 +130,7 @@ function DashUser() {
   // Fetch data from backend
   React.useEffect(() => {
     fetchUnits();
+    fetchUserBookings();
   }, []);
 
   const fetchUnits = async () => {
@@ -130,6 +142,30 @@ function DashUser() {
       }
     } catch (error) {
       console.error("Error fetching units:", error);
+    }
+  };
+
+  const fetchUserBookings = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (!userData) return;
+
+      const response = await fetch(
+        `http://localhost:5000/api/user/bookings/${userData.id}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setUserBookings(data);
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+    }
+  };
+
+  const resetView = () => {
+    if (modelViewerRef.current) {
+      modelViewerRef.current.cameraOrbit = "-30deg 75deg 8m";
+      modelViewerRef.current.fieldOfView = "45deg";
     }
   };
 
@@ -226,32 +262,197 @@ function DashUser() {
             </div>
 
             {/* 3D Viewer */}
-            <div className="viewer-container">
+            <div className="viewer-container" style={{ position: "relative" }}>
               <model-viewer
+                ref={modelViewerRef}
                 src={models[selectedModel].src}
                 camera-controls
                 environment-image="/brown_photostudio_02_2k.hdr"
                 disable-tap
+                disable-pan
                 shadow-intensity="2"
                 reveal="auto"
-                max-camera-orbit="auto auto 20m"
+                min-camera-orbit="-60deg 60deg 3m"
+                max-camera-orbit="60deg 90deg 20m"
+                camera-orbit="-30deg 75deg 8m"
                 field-of-view="45deg"
                 interpolation-decay="50"
-                min-camera-orbit="auto auto 10m"
+                interaction-prompt="none"
                 style={{
                   width: "100%",
                   height: "600px",
                   background: "#c5c5c5ff",
                 }}
               ></model-viewer>
+
+              <button
+                className="reset-view-btn"
+                onClick={resetView}
+                style={{
+                  position: "absolute",
+                  bottom: "20px",
+                  right: "20px",
+                  zIndex: 10,
+                  padding: "0.75rem 1.25rem",
+                  background: "white",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  fontWeight: "500",
+                  color: "#374151",
+                }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                  <path d="M3 21v-5h5" />
+                </svg>
+                Reset View
+              </button>
             </div>
           </div>
         );
       case "bookings":
         return (
-          <div className="content-section">
-            <h2>Bookings & Reservations</h2>
-            <p>Manage inquiries</p>
+          <div className="dashboard-content">
+            <div className="building-header">
+              <div className="building-header-info">
+                <h2>Bookings & Reservations</h2>
+                <p className="building-address">Manage your unit bookings</p>
+              </div>
+            </div>
+
+            <div className="booking-tabs">
+              <button
+                className={`booking-tab ${
+                  activeBookingTab === "all" ? "active" : ""
+                }`}
+                onClick={() => setActiveBookingTab("all")}
+              >
+                All Bookings
+              </button>
+              <button
+                className={`booking-tab ${
+                  activeBookingTab === "my" ? "active" : ""
+                }`}
+                onClick={() => setActiveBookingTab("my")}
+              >
+                My Bookings
+              </button>
+            </div>
+
+            {activeBookingTab === "all" ? (
+              <>
+                <div className="buildings-grid">
+                  {units.map((unit) => (
+                    <div
+                      key={unit.id}
+                      className="building-card unit-card-clickable"
+                      onClick={() => setSelectedBookingUnit(unit)}
+                    >
+                      <div className="building-image">
+                        <img
+                          src={(() => {
+                            try {
+                              let images = [];
+                              if (unit.images) {
+                                if (typeof unit.images === "string") {
+                                  images = JSON.parse(unit.images);
+                                } else if (Array.isArray(unit.images)) {
+                                  images = unit.images;
+                                }
+                              }
+                              const imagePath =
+                                images && images.length > 0
+                                  ? images[0]
+                                  : "/section.png";
+                              return imagePath.startsWith("/uploads")
+                                ? `http://localhost:5000${imagePath}`
+                                : imagePath;
+                            } catch (error) {
+                              console.error("Error parsing images:", error);
+                              return "/section.png";
+                            }
+                          })()}
+                          alt={unit.name}
+                          onError={(e) => {
+                            e.target.src = "/section.png";
+                          }}
+                        />
+                        <div className="available-badge">{unit.status}</div>
+                      </div>
+                      <div className="building-info">
+                        <h4>{unit.name}</h4>
+                        <p>
+                          {unit.size} sqm • ₱{unit.price}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <FAQSection />
+              </>
+            ) : (
+              <div className="bookings-grid">
+                {userBookings.length === 0 ? (
+                  <p>No bookings yet. Book a unit to get started!</p>
+                ) : (
+                  userBookings.map((booking) => (
+                    <div
+                      key={booking.id}
+                      className="booking-card unit-card-clickable"
+                      onClick={() => setSelectedUserBooking(booking)}
+                    >
+                      <div className="booking-card-header">
+                        <h4>{booking.unit_name}</h4>
+                        <span
+                          className={`booking-status ${booking.status.toLowerCase()}`}
+                        >
+                          {booking.status}
+                        </span>
+                      </div>
+                      <div className="booking-card-details">
+                        <div className="booking-detail">
+                          <strong>Meeting Date:</strong>{" "}
+                          {new Date(booking.meeting_date).toLocaleDateString()}
+                        </div>
+                        {booking.meeting_time && (
+                          <div className="booking-detail">
+                            <strong>Time:</strong> {booking.meeting_time}
+                          </div>
+                        )}
+                        <div className="booking-detail">
+                          <strong>Booked on:</strong>{" "}
+                          {new Date(booking.created_at).toLocaleDateString()}
+                        </div>
+                        <div
+                          className="booking-detail"
+                          style={{
+                            marginTop: "0.5rem",
+                            color: "#2563eb",
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          Click to view details & messages
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         );
       case "settings": {
@@ -431,6 +632,30 @@ function DashUser() {
           userData={JSON.parse(localStorage.getItem("user"))}
           onClose={() => setShowEditModal(false)}
           onSave={handleSaveProfile}
+        />
+      )}
+
+      {/* Booking Form Modal */}
+      {selectedBookingUnit && (
+        <BookingForm
+          unit={selectedBookingUnit}
+          onClose={() => setSelectedBookingUnit(null)}
+          onSuccess={() => {
+            fetchUserBookings();
+            setActiveBookingTab("my");
+          }}
+        />
+      )}
+
+      {/* User Booking Details Modal */}
+      {selectedUserBooking && (
+        <UserBookingModal
+          booking={selectedUserBooking}
+          onClose={() => setSelectedUserBooking(null)}
+          onUpdate={() => {
+            fetchUserBookings();
+            setSelectedUserBooking(null);
+          }}
         />
       )}
     </div>

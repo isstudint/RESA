@@ -477,17 +477,170 @@ app.get("/api/user/stats/:userId", async (req, res) => {
 // Create booking
 app.post("/api/user/bookings", async (req, res) => {
   try {
-    const { userId, unitId, bookingDate, meetingDate } = req.body;
+    const {
+      userId,
+      unitId,
+      bookingDate,
+      meetingDate,
+      meetingTime,
+      facebookLink,
+      contactNumber,
+    } = req.body;
 
     await db.query(
-      "INSERT INTO bookings (user_id, unit_id, booking_date, meeting_date) VALUES (?, ?, ?, ?)",
-      [userId, unitId, bookingDate, meetingDate]
+      "INSERT INTO bookings (user_id, unit_id, booking_date, meeting_date, meeting_time, facebook_link, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [
+        userId,
+        unitId,
+        bookingDate,
+        meetingDate,
+        meetingTime || null,
+        facebookLink || null,
+        contactNumber || null,
+      ]
     );
 
     res.status(201).json({ message: "Booking created successfully" });
   } catch (error) {
     console.error("Error creating booking:", error);
     res.status(500).json({ error: "Failed to create booking" });
+  }
+});
+
+// ===================================
+// BOOKING MESSAGING
+// ===================================
+
+// Send message for a booking
+app.post("/api/bookings/:id/message", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { senderType, message } = req.body;
+
+    if (!message || !senderType) {
+      return res
+        .status(400)
+        .json({ error: "Message and sender type are required" });
+    }
+
+    await db.query(
+      "INSERT INTO booking_messages (booking_id, sender_type, message) VALUES (?, ?, ?)",
+      [id, senderType, message]
+    );
+
+    res.status(201).json({ message: "Message sent successfully" });
+  } catch (error) {
+    console.error("Error sending message:", error);
+    res.status(500).json({ error: "Failed to send message" });
+  }
+});
+
+// Get messages for a booking
+app.get("/api/bookings/:id/messages", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [messages] = await db.query(
+      "SELECT * FROM booking_messages WHERE booking_id = ? ORDER BY created_at ASC",
+      [id]
+    );
+    res.json(messages);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ error: "Failed to fetch messages" });
+  }
+});
+
+// ===================================
+// BOOKING RESCHEDULING
+// ===================================
+
+// Reschedule a booking
+app.put("/api/bookings/:id/reschedule", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { meetingDate, meetingTime, adminMessage } = req.body;
+
+    if (!meetingDate) {
+      return res.status(400).json({ error: "Meeting date is required" });
+    }
+
+    const fields = ["meeting_date = ?"];
+    const values = [meetingDate];
+
+    if (meetingTime) {
+      fields.push("meeting_time = ?");
+      values.push(meetingTime);
+    }
+
+    if (adminMessage) {
+      fields.push("admin_message = ?");
+      values.push(adminMessage);
+    }
+
+    values.push(id);
+
+    await db.query(
+      `UPDATE bookings SET ${fields.join(", ")} WHERE id = ?`,
+      values
+    );
+
+    res.json({ message: "Booking rescheduled successfully" });
+  } catch (error) {
+    console.error("Error rescheduling booking:", error);
+    res.status(500).json({ error: "Failed to reschedule booking" });
+  }
+});
+
+// ===================================
+// FAQs
+// ===================================
+
+// Get all FAQs
+app.get("/api/faqs", async (req, res) => {
+  try {
+    // For now, return static FAQs. Can be moved to database later
+    const faqs = [
+      {
+        id: 1,
+        question: "How do I book a unit?",
+        answer:
+          "To book a unit, navigate to the 'All Bookings' tab, select your desired unit, fill out the booking form with your details including your Facebook account link, choose a meeting date and time, then submit.",
+      },
+      {
+        id: 2,
+        question: "What information do I need to provide?",
+        answer:
+          "You need to provide your name, email, contact number, Facebook account link, and your preferred meeting date and time.",
+      },
+      {
+        id: 3,
+        question: "How long does it take for my booking to be approved?",
+        answer:
+          "Bookings are typically reviewed within 24-48 hours. You will receive a notification once your booking is approved or if any changes are needed.",
+      },
+      {
+        id: 4,
+        question: "Can I reschedule my booking?",
+        answer:
+          "Yes, you can request a reschedule by contacting the admin through the messaging system. The admin will work with you to find a suitable time.",
+      },
+      {
+        id: 5,
+        question: "What happens after my booking is approved?",
+        answer:
+          "Once approved, you will receive confirmation and can proceed with the next steps as communicated by the admin.",
+      },
+      {
+        id: 6,
+        question: "Why do I need to provide my Facebook account?",
+        answer:
+          "Your Facebook account helps us verify your identity and provides an additional channel for communication regarding your booking.",
+      },
+    ];
+    res.json(faqs);
+  } catch (error) {
+    console.error("Error fetching FAQs:", error);
+    res.status(500).json({ error: "Failed to fetch FAQs" });
   }
 });
 
