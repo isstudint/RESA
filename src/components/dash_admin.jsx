@@ -45,6 +45,7 @@ function DashAdmin() {
   ];
 
   const [notificationType, setNotificationType] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     fetchStats();
@@ -85,38 +86,69 @@ function DashAdmin() {
 
   const checkNotifications = async (bookingsData) => {
     let type = null;
+    const notificationsList = [];
 
     // Check for pending bookings
-    const hasPending = bookingsData.some((b) => b.status === "Pending");
-    if (hasPending) {
-      type = "message"; // Use blue for pending bookings/messages
+    const pendingBookings = bookingsData.filter((b) => b.status === "Pending");
+    if (pendingBookings.length > 0) {
+      for (const booking of pendingBookings) {
+        notificationsList.push({
+          id: `pending-${booking.id}`,
+          type: "booking",
+          message: `New booking request from ${booking.first_name} ${booking.last_name} for ${booking.unit_name}`,
+          time: new Date(booking.created_at).toLocaleDateString(),
+          bookingId: booking.id,
+        });
+      }
+      type = "message";
     }
 
     // Check for unread messages from users
-    if (!type) {
-      for (const booking of bookingsData) {
-        try {
-          const res = await fetch(
-            `http://localhost:5000/api/bookings/${booking.id}/messages`
-          );
-          if (res.ok) {
-            const messages = await res.json();
-            // Check if the last message is NOT from admin (i.e., from user)
-            if (
-              messages.length > 0 &&
-              messages[messages.length - 1].sender_type !== "admin"
-            ) {
-              type = "message";
-              break;
-            }
+    for (const booking of bookingsData) {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/bookings/${booking.id}/messages`
+        );
+        if (res.ok) {
+          const messages = await res.json();
+          // Check if the last message is NOT from admin (i.e., from user)
+          if (
+            messages.length > 0 &&
+            messages[messages.length - 1].sender_type !== "admin"
+          ) {
+            const lastMsg = messages[messages.length - 1];
+            notificationsList.unshift({
+              id: `message-${booking.id}-${lastMsg.id}`,
+              type: "message",
+              message: `New message from ${booking.first_name} ${booking.last_name}: "${lastMsg.message.substring(0, 50)}${lastMsg.message.length > 50 ? '...' : ''}"`,
+              time: new Date(lastMsg.created_at).toLocaleString(),
+              bookingId: booking.id,
+            });
+            type = "message";
           }
-        } catch (err) {
-          console.error("Error checking messages:", err);
         }
+      } catch (err) {
+        console.error("Error checking messages:", err);
       }
     }
 
+    setNotifications(notificationsList);
     setNotificationType(type);
+  };
+
+  const handleNotificationClick = (notification) => {
+    setActiveTab("bookings");
+    if (notification.type === "message") {
+      const booking = bookings.find((b) => b.id === notification.bookingId);
+      if (booking) {
+        setSelectedBookingForMessage(booking);
+      }
+    }
+  };
+
+  const handleClearNotifications = () => {
+    setNotifications([]);
+    setNotificationType(null);
   };
 
   const handleLogout = () => {
@@ -459,6 +491,25 @@ function DashAdmin() {
           }
         };
 
+        const handleDeleteBooking = async (bookingId) => {
+          if (window.confirm("Are you sure you want to permanently delete this booking? This action cannot be undone.")) {
+            try {
+              const response = await fetch(
+                `http://localhost:5000/api/bookings/${bookingId}`,
+                {
+                  method: "DELETE",
+                }
+              );
+              if (response.ok) {
+                fetchBookings();
+                fetchStats();
+              }
+            } catch (error) {
+              console.error("Error deleting booking:", error);
+            }
+          }
+        };
+
         return (
           <div className="content-section">
             <h2>Bookings Management</h2>
@@ -645,6 +696,29 @@ function DashAdmin() {
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                               </svg>
                             </button>
+                            <button
+                              className="action-btn delete-btn"
+                              onClick={() =>
+                                handleDeleteBooking(booking.id)
+                              }
+                              title="Delete"
+                              style={{
+                                background: "#fee2e2",
+                                color: "#ef4444",
+                              }}
+                            >
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              </svg>
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -682,6 +756,9 @@ function DashAdmin() {
           user={{ firstName: "Admin", role: "Admin" }}
           onLogout={handleLogout}
           hasNotifications={notificationType}
+          notifications={notifications}
+          onNotificationClick={handleNotificationClick}
+          onClearNotifications={handleClearNotifications}
         />
         {renderContent()}
       </main>

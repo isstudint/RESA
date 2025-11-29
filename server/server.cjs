@@ -354,6 +354,28 @@ app.put("/api/bookings/:id", async (req, res) => {
   }
 });
 
+// Delete booking
+app.delete("/api/bookings/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // First try to delete related messages (ignore if table doesn't exist)
+    try {
+      await db.query("DELETE FROM booking_messages WHERE booking_id = ?", [id]);
+    } catch (msgError) {
+      console.log("Note: booking_messages table may not exist, continuing...");
+    }
+    
+    // Then delete the booking
+    await db.query("DELETE FROM bookings WHERE id = ?", [id]);
+    
+    res.json({ message: "Booking deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting booking:", error);
+    res.status(500).json({ error: "Failed to delete booking" });
+  }
+});
+
 // ===================================
 // ADMIN DASHBOARD STATS
 // ===================================

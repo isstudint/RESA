@@ -126,6 +126,7 @@ function DashUser() {
 
   const [units, setUnits] = useState([]);
   const [notificationType, setNotificationType] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
   // Fetch data from backend
   React.useEffect(() => {
@@ -165,8 +166,34 @@ function DashUser() {
 
   const checkNotifications = async (bookings) => {
     let type = null;
+    const notificationsList = [];
 
-    // Check for unread messages from admin FIRST
+    // Check for booking status changes
+    for (const booking of bookings) {
+      if (booking.status === "Approved") {
+        notificationsList.push({
+          id: `approved-${booking.id}`,
+          type: "approved",
+          message: `Your booking for ${booking.unit_name} has been approved!`,
+          time: new Date(booking.created_at).toLocaleDateString(),
+          bookingId: booking.id,
+          booking: booking,
+        });
+        if (!type) type = "approved";
+      } else if (booking.status === "Declined") {
+        notificationsList.push({
+          id: `declined-${booking.id}`,
+          type: "declined",
+          message: `Your booking for ${booking.unit_name} has been declined.`,
+          time: new Date(booking.created_at).toLocaleDateString(),
+          bookingId: booking.id,
+          booking: booking,
+        });
+        if (!type) type = "declined";
+      }
+    }
+
+    // Check for unread messages from admin
     for (const booking of bookings) {
       try {
         const res = await fetch(
@@ -179,8 +206,16 @@ function DashUser() {
             messages.length > 0 &&
             messages[messages.length - 1].sender_type === "admin"
           ) {
+            const lastMsg = messages[messages.length - 1];
+            notificationsList.unshift({
+              id: `message-${booking.id}-${lastMsg.id}`,
+              type: "message",
+              message: `New message from admin for ${booking.unit_name}: "${lastMsg.message.substring(0, 50)}${lastMsg.message.length > 50 ? '...' : ''}"`,
+              time: new Date(lastMsg.created_at).toLocaleString(),
+              bookingId: booking.id,
+              booking: booking,
+            });
             type = "message";
-            break;
           }
         }
       } catch (err) {
@@ -188,19 +223,44 @@ function DashUser() {
       }
     }
 
-    // If no messages, check booking statuses
-    if (!type) {
-      const hasApproved = bookings.some((b) => b.status === "Approved");
-      const hasDeclined = bookings.some((b) => b.status === "Declined");
+    setNotifications(notificationsList);
+    setNotificationType(type);
+  };
 
-      if (hasApproved) {
-        type = "approved";
-      } else if (hasDeclined) {
-        type = "declined";
+  const handleNotificationClick = (notification) => {
+    if (notification.booking) {
+      setSelectedUserBooking(notification.booking);
+      setActiveTab("bookings");
+      setActiveBookingTab("my");
+    }
+  };
+
+  const handleClearNotifications = () => {
+    setNotifications([]);
+    setNotificationType(null);
+  };
+
+  const handleDeleteBooking = async (e, bookingId) => {
+    e.stopPropagation(); // Prevent opening the modal
+    if (window.confirm("Are you sure you want to delete this booking? This action cannot be undone.")) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/bookings/${bookingId}`,
+          {
+            method: "DELETE",
+          }
+        );
+        if (response.ok) {
+          fetchUserBookings();
+        } else {
+          const data = await response.json();
+          alert(data.error || "Failed to delete booking");
+        }
+      } catch (error) {
+        console.error("Error deleting booking:", error);
+        alert("Cannot connect to server");
       }
     }
-
-    setNotificationType(type);
   };
 
   const resetView = () => {
@@ -416,11 +476,43 @@ function DashUser() {
                     >
                       <div className="booking-card-header">
                         <h4>{booking.unit_name}</h4>
-                        <span
-                          className={`booking-status ${booking.status.toLowerCase()}`}
-                        >
-                          {booking.status}
-                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <span
+                            className={`booking-status ${booking.status.toLowerCase()}`}
+                          >
+                            {booking.status}
+                          </span>
+                          <button
+                            onClick={(e) => handleDeleteBooking(e, booking.id)}
+                            title="Delete booking"
+                            style={{
+                              background: "#fee2e2",
+                              border: "none",
+                              borderRadius: "6px",
+                              padding: "0.35rem",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "#ef4444",
+                              transition: "all 0.2s",
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = "#fecaca"}
+                            onMouseOut={(e) => e.currentTarget.style.background = "#fee2e2"}
+                          >
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                       <div className="booking-card-details">
                         <div className="booking-detail">
@@ -622,6 +714,9 @@ function DashUser() {
           user={JSON.parse(localStorage.getItem("user"))}
           onLogout={handleLogout}
           hasNotifications={notificationType}
+          notifications={notifications}
+          onNotificationClick={handleNotificationClick}
+          onClearNotifications={handleClearNotifications}
         />
         {renderContent()}
       </main>

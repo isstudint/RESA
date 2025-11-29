@@ -19,7 +19,7 @@
 
 /* Notification Icon */
 .navbar-icon-btn {
-  background: none;
+  background: none !important;
   border: none;
   cursor: pointer;
   padding: 0.5rem;
@@ -32,99 +32,40 @@
   position: relative;
 }
 
+.navbar-icon-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
 .navbar-icon-btn:hover {
-  background-color: #f5f5f5;
+  background-color: #f5f5f5 !important;
   color: #1a1a1a;
 }
 
-/* Specific Notification Colors - Applied to dot only */
-.notification-dot.message {
-  background-color: #2563eb; /* Blue for messages */
-  box-shadow: 0 0 0 2px #ffffff;
-}
-
-.notification-dot.approved {
-  background-color: #10b981; /* Green for approved */
-  box-shadow: 0 0 0 2px #ffffff;
-}
-
-.notification-dot.declined {
-  background-color: #ef4444; /* Red for declined */
-  box-shadow: 0 0 0 2px #ffffff;
-}
-
-/* Remove icon color changes */
-.notification-btn.active {
-  color: #666; /* Keep default color */
-}
-
-.notification-btn.active:hover {
-  color: #1a1a1a;
-}
-
-/* Notification Dot */
+/* Notification Dot - Small indicator */
 .notification-dot {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  animation: pulse 2s infinite;
+  position: absolute !important;
+  top: 2px !important;
+  right: 2px !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  border: 2px solid #fff !important;
+  background-color: #ef4444 !important;
+  pointer-events: none;
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
-  }
+/* Specific Notification Colors */
+.notification-dot.message {
+  background-color: #2563eb !important;
 }
 
 .notification-dot.approved {
-  animation: pulse-green 2s infinite;
-}
-
-@keyframes pulse-green {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
+  background-color: #10b981 !important;
 }
 
 .notification-dot.declined {
-  animation: pulse-red 2s infinite;
-}
-
-@keyframes pulse-red {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
+  background-color: #ef4444 !important;
 }
 
 /* Account Initials Badge */
@@ -241,5 +182,154 @@
     left: 0;
     width: 100%;
     padding: 1rem;
+  }
+}
+
+/* Notification Dropdown Styles */
+.notification-dropdown-container {
+  position: relative;
+}
+
+.notification-dropdown-menu {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  width: 340px;
+  max-height: 450px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  animation: slideDown 0.2s ease-out;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.notification-title {
+  font-family: "bold", sans-serif;
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
+.clear-notifications-btn {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-family: "medium", sans-serif;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.clear-notifications-btn:hover {
+  background-color: #eff6ff;
+}
+
+.notification-list {
+  overflow-y: auto;
+  max-height: 350px;
+  padding: 0.5rem;
+}
+
+.no-notifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  color: #9ca3af;
+}
+
+.no-notifications p {
+  margin: 0.75rem 0 0 0;
+  font-family: "medium", sans-serif;
+  font-size: 0.875rem;
+}
+
+.notification-item {
+  display: flex;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 0.25rem;
+}
+
+.notification-item:hover {
+  background-color: #f3f4f6;
+}
+
+.notification-item:last-child {
+  margin-bottom: 0;
+}
+
+.notification-icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notification-icon-wrapper.message {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.notification-icon-wrapper.approved {
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+.notification-icon-wrapper.declined {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.notification-icon-wrapper.booking {
+  background-color: #e0e7ff;
+  color: #6366f1;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-message {
+  margin: 0 0 0.25rem 0;
+  font-family: "medium", sans-serif;
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.4;
+}
+
+.notification-time {
+  font-family: "regular", sans-serif;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Mobile Responsiveness for Notification Dropdown */
+@media (max-width: 480px) {
+  .notification-dropdown-menu {
+    width: 300px;
+    right: -50px;
   }
 }
