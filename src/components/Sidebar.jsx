@@ -1,7 +1,7 @@
-import React from 'react';
-import '../css/dash_admin.css';
+import React from "react";
+import "../css/dash_admin.css";
 
-function Sidebar({ menuItems, activeTab, onTabChange, onLogout, userRole = 'User' }) {
+function Sidebar({ menuItems, activeTab, onTabChange, userRole = "User" }) {
   return (
     <aside className="admin-sidebar">
       {/* Logo */}
@@ -17,7 +17,9 @@ function Sidebar({ menuItems, activeTab, onTabChange, onLogout, userRole = 'User
             <li key={item.id}>
               <button
                 onClick={() => onTabChange(item.id)}
-                className={`nav-button ${activeTab === item.id ? 'active' : ''}`}
+                className={`nav-button ${
+                  activeTab === item.id ? "active" : ""
+                }`}
               >
                 <span className="nav-label">{item.label}</span>
               </button>
@@ -25,11 +27,6 @@ function Sidebar({ menuItems, activeTab, onTabChange, onLogout, userRole = 'User
           ))}
         </ul>
       </nav>
-
-      {/* Logout Button */}
-      <button className="sidebar-logout" onClick={onLogout}>
-        Logout
-      </button>
 
       {/* Footer */}
       <div className="sidebar-footer">

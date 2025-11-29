@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/dash_admin.css";
 import "../css/bookings.css";
-import Sidebar from "./sidebar";
+import Sidebar from "./Sidebar";
 import AdminUnitModal from "./AdminUnitModal";
 import RescheduleModal from "./RescheduleModal";
 import MessageModal from "./MessageModal";
+import DashboardNavbar from "./DashboardNavbar";
+import { getUnitThumbnail } from "../utils/imageUtils";
 
 function DashAdmin() {
   const navigate = useNavigate();
@@ -42,6 +44,8 @@ function DashAdmin() {
     { id: "settings", label: "Settings" },
   ];
 
+  const [notificationType, setNotificationType] = useState(null);
+
   useEffect(() => {
     fetchStats();
     fetchUnits();
@@ -69,10 +73,50 @@ function DashAdmin() {
   const fetchBookings = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/bookings");
-      if (res.ok) setBookings(await res.json());
+      if (res.ok) {
+        const data = await res.json();
+        setBookings(data);
+        checkNotifications(data);
+      }
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
+  };
+
+  const checkNotifications = async (bookingsData) => {
+    let type = null;
+
+    // Check for pending bookings
+    const hasPending = bookingsData.some((b) => b.status === "Pending");
+    if (hasPending) {
+      type = "message"; // Use blue for pending bookings/messages
+    }
+
+    // Check for unread messages from users
+    if (!type) {
+      for (const booking of bookingsData) {
+        try {
+          const res = await fetch(
+            `http://localhost:5000/api/bookings/${booking.id}/messages`
+          );
+          if (res.ok) {
+            const messages = await res.json();
+            // Check if the last message is NOT from admin (i.e., from user)
+            if (
+              messages.length > 0 &&
+              messages[messages.length - 1].sender_type !== "admin"
+            ) {
+              type = "message";
+              break;
+            }
+          }
+        } catch (err) {
+          console.error("Error checking messages:", err);
+        }
+      }
+    }
+
+    setNotificationType(type);
   };
 
   const handleLogout = () => {
@@ -244,28 +288,7 @@ function DashAdmin() {
                 <div key={unit.id} className="unit-card-admin">
                   <div className="unit-image-admin">
                     <img
-                      src={(() => {
-                        try {
-                          let images = [];
-                          if (unit.images) {
-                            if (typeof unit.images === "string") {
-                              images = JSON.parse(unit.images);
-                            } else if (Array.isArray(unit.images)) {
-                              images = unit.images;
-                            }
-                          }
-                          const imagePath =
-                            images && images.length > 0
-                              ? images[0]
-                              : "/section.png";
-                          return imagePath.startsWith("/uploads")
-                            ? `http://localhost:5000${imagePath}`
-                            : imagePath;
-                        } catch (error) {
-                          console.error("Error parsing images:", error);
-                          return "/section.png";
-                        }
-                      })()}
+                      src={getUnitThumbnail(unit)}
                       alt={unit.name}
                       onError={(e) => {
                         e.target.src = "/section.png";
@@ -651,11 +674,17 @@ function DashAdmin() {
         menuItems={menuItems}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        onLogout={handleLogout}
         userRole="Admin"
       />
 
-      <main className="admin-content">{renderContent()}</main>
+      <main className="admin-content">
+        <DashboardNavbar
+          user={{ firstName: "Admin", role: "Admin" }}
+          onLogout={handleLogout}
+          hasNotifications={notificationType}
+        />
+        {renderContent()}
+      </main>
 
       {editingUnit && (
         <AdminUnitModal

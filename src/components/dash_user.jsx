@@ -4,15 +4,14 @@ import "../css/dash_admin.css";
 import "../css/settings.css";
 import "../css/bookings.css";
 import Setting from "../assets/setting.svg";
-import Home from "../assets/home.png";
-import Key from "../assets/key.png";
-import Property from "../assets/property.png";
 import UnitModal from "./UnitModal";
-import Sidebar from "./sidebar";
+import { getUnitThumbnail } from "../utils/imageUtils";
+import Sidebar from "./Sidebar";
 import EditProfileModal from "./EditProfileModal";
 import BookingForm from "./BookingForm";
 import FAQSection from "./FAQSection";
 import UserBookingModal from "./UserBookingModal";
+import DashboardNavbar from "./DashboardNavbar";
 
 function DashUser() {
   const navigate = useNavigate();
@@ -126,6 +125,7 @@ function DashUser() {
   };
 
   const [units, setUnits] = useState([]);
+  const [notificationType, setNotificationType] = useState(null);
 
   // Fetch data from backend
   React.useEffect(() => {
@@ -156,10 +156,51 @@ function DashUser() {
       if (response.ok) {
         const data = await response.json();
         setUserBookings(data);
+        checkNotifications(data);
       }
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
+  };
+
+  const checkNotifications = async (bookings) => {
+    let type = null;
+
+    // Check for unread messages from admin FIRST
+    for (const booking of bookings) {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/bookings/${booking.id}/messages`
+        );
+        if (res.ok) {
+          const messages = await res.json();
+          // Check if the last message is from admin
+          if (
+            messages.length > 0 &&
+            messages[messages.length - 1].sender_type === "admin"
+          ) {
+            type = "message";
+            break;
+          }
+        }
+      } catch (err) {
+        console.error("Error checking messages:", err);
+      }
+    }
+
+    // If no messages, check booking statuses
+    if (!type) {
+      const hasApproved = bookings.some((b) => b.status === "Approved");
+      const hasDeclined = bookings.some((b) => b.status === "Declined");
+
+      if (hasApproved) {
+        type = "approved";
+      } else if (hasDeclined) {
+        type = "declined";
+      }
+    }
+
+    setNotificationType(type);
   };
 
   const resetView = () => {
@@ -195,28 +236,7 @@ function DashUser() {
                   >
                     <div className="building-image">
                       <img
-                        src={(() => {
-                          try {
-                            let images = [];
-                            if (unit.images) {
-                              if (typeof unit.images === "string") {
-                                images = JSON.parse(unit.images);
-                              } else if (Array.isArray(unit.images)) {
-                                images = unit.images;
-                              }
-                            }
-                            const imagePath =
-                              images && images.length > 0
-                                ? images[0]
-                                : "/section.png";
-                            return imagePath.startsWith("/uploads")
-                              ? `http://localhost:5000${imagePath}`
-                              : imagePath;
-                          } catch (error) {
-                            console.error("Error parsing images:", error);
-                            return "/section.png";
-                          }
-                        })()}
+                        src={getUnitThumbnail(unit)}
                         alt={unit.name}
                         onError={(e) => {
                           e.target.src = "/section.png";
@@ -364,28 +384,7 @@ function DashUser() {
                     >
                       <div className="building-image">
                         <img
-                          src={(() => {
-                            try {
-                              let images = [];
-                              if (unit.images) {
-                                if (typeof unit.images === "string") {
-                                  images = JSON.parse(unit.images);
-                                } else if (Array.isArray(unit.images)) {
-                                  images = unit.images;
-                                }
-                              }
-                              const imagePath =
-                                images && images.length > 0
-                                  ? images[0]
-                                  : "/section.png";
-                              return imagePath.startsWith("/uploads")
-                                ? `http://localhost:5000${imagePath}`
-                                : imagePath;
-                            } catch (error) {
-                              console.error("Error parsing images:", error);
-                              return "/section.png";
-                            }
-                          })()}
+                          src={getUnitThumbnail(unit)}
                           alt={unit.name}
                           onError={(e) => {
                             e.target.src = "/section.png";
@@ -614,12 +613,18 @@ function DashUser() {
         menuItems={menuItems}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        onLogout={handleLogout}
         userRole="User"
       />
 
       {/* Main Content */}
-      <main className="admin-content">{renderContent()}</main>
+      <main className="admin-content">
+        <DashboardNavbar
+          user={JSON.parse(localStorage.getItem("user"))}
+          onLogout={handleLogout}
+          hasNotifications={notificationType}
+        />
+        {renderContent()}
+      </main>
 
       {/* Unit Modal */}
       {selectedUnit && (

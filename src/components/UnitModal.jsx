@@ -1,29 +1,13 @@
 import React, { useState } from "react";
 import "../css/unit_modal.css";
+import { getAllUnitImages } from "../utils/imageUtils";
 
 function UnitModal({ unit, onClose }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!unit) return null;
 
-  // Parse images array
-  let images = [];
-  try {
-    if (unit.images) {
-      if (typeof unit.images === "string") {
-        images = JSON.parse(unit.images);
-      } else if (Array.isArray(unit.images)) {
-        images = unit.images;
-      }
-    }
-  } catch (error) {
-    console.error("Error parsing images:", error);
-  }
-
-  // Fallback to default image if no images
-  if (images.length === 0) {
-    images = ["/section.png"];
-  }
+  const images = getAllUnitImages(unit);
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -34,10 +18,8 @@ function UnitModal({ unit, onClose }) {
   };
 
   const getCurrentImageSrc = () => {
-    const imagePath = images[currentImageIndex];
-    return imagePath.startsWith("/uploads")
-      ? `http://localhost:5000${imagePath}`
-      : imagePath;
+    // The utility returns full paths/URLs now
+    return images[currentImageIndex];
   };
 
   return (

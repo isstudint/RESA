@@ -1,0 +1,245 @@
+/* Dashboard Navbar Styles */
+.dashboard-navbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 200px; /* Aligned with sidebar width */
+  width: calc(100% - 200px);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 1.5rem;
+  height: 70px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* Notification Icon */
+.navbar-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: #666;
+  position: relative;
+}
+
+.navbar-icon-btn:hover {
+  background-color: #f5f5f5;
+  color: #1a1a1a;
+}
+
+/* Specific Notification Colors - Applied to dot only */
+.notification-dot.message {
+  background-color: #2563eb; /* Blue for messages */
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.notification-dot.approved {
+  background-color: #10b981; /* Green for approved */
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.notification-dot.declined {
+  background-color: #ef4444; /* Red for declined */
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+/* Remove icon color changes */
+.notification-btn.active {
+  color: #666; /* Keep default color */
+}
+
+.notification-btn.active:hover {
+  color: #1a1a1a;
+}
+
+/* Notification Dot */
+.notification-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
+.notification-dot.approved {
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.notification-dot.declined {
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Account Initials Badge */
+.account-initials-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  font-family: "bold", sans-serif;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.account-initials-btn:hover {
+  transform: scale(1.05);
+  background-color: #333;
+}
+
+/* Account Dropdown */
+.account-dropdown-container {
+  position: relative;
+}
+
+.account-dropdown-menu {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  width: 220px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 0.5rem;
+}
+
+.dropdown-user-name {
+  font-family: "bold", sans-serif;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.dropdown-user-email {
+  font-family: "regular", sans-serif;
+  font-size: 0.75rem;
+  color: #666;
+  display: block;
+  word-break: break-all;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: "medium", sans-serif;
+  font-size: 0.875rem;
+  color: #374151;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f3f4f6;
+  color: #1a1a1a;
+}
+
+.dropdown-item.logout {
+  color: #ef4444;
+  margin-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+  border-radius: 0 0 6px 6px;
+}
+
+.dropdown-item.logout:hover {
+  background-color: #fef2f2;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .dashboard-navbar {
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+}
